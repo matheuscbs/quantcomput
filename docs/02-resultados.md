@@ -17,6 +17,45 @@ Os números abaixo saem dos JSONs em `experimentos/*/resultados/` e, nos experim
 | E09 | atenção esparsa | expoente não vem do discurso | 0,41 (real) e 0,48 (frases embaralhadas), IC sobrepostos |
 | E10 | atenção esparsa | inconclusivo | ganho de contexto 0,042 < 0,05 nat |
 | E11 | limite de canal | evidência parcial | r = 8: 69,6% (N = 13 mil) e 74,2% (N = 118 mil) |
+| E12 | limite de canal | total de bits não governa (B1 reprovado) | ruído com 1 bit por medida: no máximo 1 ponto abaixo do float32 |
+
+## E12: canal quantizado e ruidoso
+
+O canal do E11 passa a ter b bits de capacidade por projeção: quantização estocástica sem viés ou ruído gaussiano com SNR = 2^(2b) − 1. Acurácia de teste (%), média de 2 sementes, N = 118.282. O float32 dá 74,2 / 77,6 / 80,7 para r = 8 / 32 / 128.
+
+| canal | r | b = 1 | 2 | 4 | 8 |
+|---|---|---|---|---|---|
+| ruído | 8 | 73,2 | 74,1 | 74,3 | 74,1 |
+| ruído | 32 | 76,7 | 77,3 | 77,5 | 77,6 |
+| ruído | 128 | 80,3 | 80,7 | 80,8 | 80,7 |
+| quant | 8 | 69,3 | 73,4 | 74,3 | 74,1 |
+| quant | 32 | 73,3 | 76,7 | 77,4 | 77,4 |
+| quant | 128 | 75,8 | 79,8 | 80,6 | 80,8 |
+
+Pelos critérios:
+
+- **B1 reprovado:** acurácia contra log2 do total de bits teve R² de 0,70 a 0,84 nos quatro ajustes (exigido: 0,90).
+- **B2:** separar log2 r e log2 b reduziu os resíduos em 89% e 98% no canal ruidoso e em 39% no quantizado. A regra do script é "qualquer ajuste", então B2 consta como aprovado.
+- **B3 aprovado:** em 24 de 24 configurações, a rede maior não perdeu mais de 1 ponto.
+- **B4 aprovado:** o float32 repetiu o E11 com diferença zero nas 6 células.
+
+```mermaid
+xychart-beta
+    title "E12, N = 118.282, canal ruidoso: acurácia (%) por bits por medida"
+    x-axis "b (bits por projeção)" [1, 2, 4, 8]
+    y-axis "acurácia de teste (%)" 70 --> 82
+    line [73.2, 74.1, 74.3, 74.1]
+    line [76.7, 77.3, 77.5, 77.6]
+    line [80.3, 80.7, 80.8, 80.7]
+```
+
+Linhas, de baixo para cima: r = 8, 32 e 128. As linhas são quase planas em b e bem separadas em r.
+
+**Exploratório.**
+
+- Com o mesmo total de bits, mais medidas de menor precisão ganham. Canal ruidoso, N = 118.282: com 96 mil bits, 74,1% (r = 8, b = 8) contra 77,3% (r = 32, b = 2); com 384 mil bits, 77,6% (r = 32, b = 8) contra 80,7% (r = 128, b = 2). No quantizado a troca se inverte em b = 1.
+- No quantizado, b = 2 perde de 0,5 a 1,1 ponto e b = 4 empata com float32 em todos os r. O limiar previsto pelo QSGD (b ≈ ½ log2 r) cresceria com r; nessa grade, isso não aparece com clareza.
+- Tabela de N = 13.002 e coeficientes dos ajustes no [README do E12](../experimentos/E12-canal-quantizado-e-ruidoso/README.md#resultado).
 
 ## E11: canais de gradiente
 

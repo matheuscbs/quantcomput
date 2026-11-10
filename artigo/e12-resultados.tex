@@ -1,3 +1,26 @@
-% Gerado a partir de experimentos/E12-canal-quantizado-e-ruidoso/resultados/. Provisório até o fim da execução.
-\newcommand{\EdozeResumo}{os resultados estão em processamento.}
-\newcommand{\EdozeTexto}{Execução em andamento; esta subseção será preenchida com os resultados registrados.}
+% Gerado a partir de experimentos/E12-canal-quantizado-e-ruidoso/resultados/canal-quantizado.json (2 sementes).
+\newcommand{\EdozeResumo}{a acurácia acompanhou o número de projeções e não o total de bits: ruído gaussiano com um bit de capacidade por projeção reduziu a acurácia em no máximo 1 ponto, e, para o mesmo total de bits, mais projeções de menor precisão superaram menos projeções de maior precisão.}
+\newcommand{\EdozeTexto}{%
+A Tabela~\ref{tab:e12} resume o E12 para $N = 118.282$. O critério B1 não foi atendido: a regressão da acurácia sobre $\log_2$ do total de bits obteve $R^2$ entre 0,70 e 0,84 nos quatro ajustes (dois valores de $N$ e dois canais). A inclusão de $\log_2 r$ e $\log_2 b$ como variáveis separadas reduziu a soma dos quadrados dos resíduos em 89\% e 98\% no canal ruidoso e em 39\% no canal quantizado; no canal ruidoso, o coeficiente de $\log_2 b$ foi cerca de dez vezes menor que o de $\log_2 r$. B3 foi atendido nas 24 configurações, e o controle em float32 reproduziu o E11 sem diferença nas seis células (B4).
+
+No canal ruidoso, $b=1$ ($\SNR = 3$) reduziu a acurácia em no máximo 1,0 ponto em relação ao float32 nos dois tamanhos de rede. Na quantização estocástica, $b=1$ reduziu a acurácia de 4 a 9 pontos, $b=2$ de 0,5 a 1,1 ponto, e $b=4$ não diferiu do float32. Para o mesmo total de bits, aumentar $r$ e reduzir $b$ elevou a acurácia: no canal ruidoso com $N=118.282$, $9{,}6\times10^4$ bits resultaram em 74,1\% com $(r,b)=(8,8)$ e 77,3\% com $(32,2)$. Na quantização, a relação inverte-se em $b=1$.
+
+\begin{table}[t]
+\centering
+\caption{E12, $N=118.282$: acurácia de teste (\%) por projeções $r$ e bits por projeção $b$, média de 2 sementes}
+\label{tab:e12}
+\begin{tabular}{llccccc}
+\toprule
+canal & $r$ & $b=1$ & 2 & 4 & 8 & float32 \\
+\midrule
+ruído & 8   & 73,2 & 74,1 & 74,3 & 74,1 & 74,2 \\
+ruído & 32  & 76,7 & 77,3 & 77,5 & 77,6 & 77,6 \\
+ruído & 128 & 80,3 & 80,7 & 80,8 & 80,7 & 80,7 \\
+\midrule
+quant. & 8   & 69,3 & 73,4 & 74,3 & 74,1 & 74,2 \\
+quant. & 32  & 73,3 & 76,7 & 77,4 & 77,4 & 77,6 \\
+quant. & 128 & 75,8 & 79,8 & 80,6 & 80,8 & 80,7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+}

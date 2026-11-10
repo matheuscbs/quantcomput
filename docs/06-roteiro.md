@@ -16,6 +16,8 @@ Rodar `make e11` com o ambiente do `poetry.lock` e comparar com o resultado ofic
 
 ### E12: canal quantizado e ruidoso
 
+> **Feito em 2026-11-10.** Desenho final e critérios no [README do E12](../experimentos/E12-canal-quantizado-e-ruidoso/README.md) (2 sementes, b de 1 a 8, quantização e ruído). B1 reprovado: o total de bits não governa a acurácia. A proposta abaixo fica como registro do plano original.
+
 **Pergunta.** A acurácia depende só do total de bits entregues ao otimizador, $r \cdot b \cdot S$?
 
 **Desenho.**
@@ -47,6 +49,10 @@ Desenho fatorial com pelo menos duas tarefas, duas arquiteturas, duas distribui�
 - **E13a**: Fashion-MNIST com 2, 5 e 10 classes, mesmos r e N; testa se o total de bits acompanha k (H12).
 - **E13b**: modo adaptativo que acumula a estimativa do subespaço de topo; comparado ao oráculo (H13).
 - **E13c**: $d_{\text{int}90}$ (Li et al., 2018) das redes do E11, para comparar subespaço fixo com projeções renovadas.
+
+### E13d: sugerido pelo E12
+
+Medir, em cada passo, a variância das projeções entre minilotes e compará-la com a variância do ruído de canal. Repetir o E12 com lotes maiores (512, 2048): se H14 vale, o limiar de b útil sobe quando o ruído do minilote cai. Esse é o teste que diz se a saturação em 1 a 2 bits é propriedade da tarefa ou do SGD.
 
 ### E14: perturbação real
 

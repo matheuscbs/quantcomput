@@ -1,6 +1,6 @@
 [project]
 name = "quantos-bits-custa-aprender"
-version = "0.1.0"
+version = "0.2.0"
 description = "Experimentos sobre o limite de informação do treino de hardware físico sem backpropagation."
 authors = [{ name = "Matheus Cardoso" }]
 readme = "README.md"

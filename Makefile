@@ -5,7 +5,7 @@ PY = poetry run python
 EXP = experimentos
 OUT = saidas
 
-.PHONY: verificar instalar dados e01 e02 e03 e04 e05 e06 e07 e08 e09 e10 e11 artigo lint limpar
+.PHONY: verificar instalar dados e01 e02 e03 e04 e05 e06 e07 e08 e09 e10 e11 e12 artigo lint limpar
 
 instalar:
 	poetry install --all-extras
@@ -29,6 +29,7 @@ e08: | $(OUT) ; $(PY) $(EXP)/E08-atencao-escala-e-proxy/atencao_escala_e_proxy.p
 e09: | $(OUT) ; $(PY) $(EXP)/E09-expoente-texto-embaralhado/expoente_texto_embaralhado.py dados/moby.txt $(OUT)/expoente-texto-embaralhado.json
 e10: | $(OUT) ; $(PY) $(EXP)/E10-treino-com-orcamento/treino_com_orcamento.py dados/moby.txt $(OUT)/treino-com-orcamento.json 2000 2
 e11: | $(OUT) ; $(PY) $(EXP)/E11-canais-de-gradiente/canais_de_gradiente.py dados/fashion $(OUT)/canais-de-gradiente.json
+e12: | $(OUT) ; cd $(EXP)/E12-canal-quantizado-e-ruidoso && $(PY) canal_quantizado.py rodar ../../dados/fashion ../../$(OUT)/e12-s0.json 0 && $(PY) canal_quantizado.py rodar ../../dados/fashion ../../$(OUT)/e12-s1.json 1 && $(PY) canal_quantizado.py analisar ../../$(OUT)/e12.json ../../$(OUT)/e12-s0.json ../../$(OUT)/e12-s1.json --e11 ../E11-canais-de-gradiente/resultados/canais-de-gradiente.json
 
 verificar:
 	python3 scripts/verificar_ensaio.py

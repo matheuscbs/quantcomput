@@ -2,9 +2,9 @@
 
 Experimentos, notas e artigo sobre uma pergunta de pesquisa: quantos bits de realimentação uma máquina física (analógica, óptica ou quântica) precisa receber para aprender uma tarefa, e quanto tempo e energia a física cobra por esses bits.
 
-O repositório nasceu de um ensaio para a seleção do Doutorado Profissional em Engenharia de Sistemas Inteligentes e Tecnologias Quânticas do Instituto Ramanujan. Ele guarda o ensaio, os onze experimentos que levaram até a hipótese (inclusive os que a derrubaram em versões anteriores), os registros completos das execuções e o artigo em LaTeX.
+O repositório nasceu de um ensaio para a seleção do Doutorado Profissional em Engenharia de Sistemas Inteligentes e Tecnologias Quânticas do Instituto Ramanujan. Ele guarda o ensaio, os onze experimentos que levaram até a hipótese (inclusive os que a derrubaram em versões anteriores), o teste complementar feito depois (E12), os registros completos das execuções e o artigo em LaTeX.
 
-> **Estado:** v0.1.0, exploratório. Os experimentos rodaram em um notebook (Apple M5) com redes pequenas e canais simulados sem ruído. Servem para mostrar que a pergunta merece ser feita, não para respondê-la.
+> **Estado:** v0.2.0, exploratório. Os experimentos rodaram em um notebook (Apple M5) com redes pequenas e canais simulados (sem ruído no E11; quantizados ou ruidosos no E12, sempre a partir do gradiente exato). Servem para mostrar que a pergunta merece ser feita, não para respondê-la.
 
 ## A hipótese
 
@@ -40,7 +40,20 @@ O otimizador recebeu só $r$ projeções do gradiente por passo, em Fashion-MNIS
 
 Nove vezes mais parâmetros não pioraram a acurácia com $r$ fixo. Nenhum $r$ até 128 chegou a menos de 2 pontos do backprop, que era o critério fixado antes de rodar. Escolher as direções a partir das medidas anteriores foi pior que sorteá-las.
 
-O teste tem limites que precisam ficar claros. As projeções saem do gradiente exato, calculado por backpropagation, e chegam ao otimizador em float32 sem ruído. A contagem de "medidas" é só $r \times$ passos, sem custo de operação. A seção [Questões abertas](docs/03-questoes-abertas.md) trata disso.
+## Canal com poucos bits (E12)
+
+O E12 repetiu o E11 com um canal de b bits por projeção (quantização ou ruído gaussiano), para ver se a acurácia passa a depender só do total de bits. Não passa. Ela segue o número de medidas r, e a precisão satura cedo:
+
+| N = 118.282, canal ruidoso | b = 1 (SNR = 3) | b = 8 | float32 |
+|---|---|---|---|
+| r = 8 | 73,2% | 74,1% | 74,2% |
+| r = 128 | 80,3% | 80,7% | 80,7% |
+
+Com o mesmo orçamento de bits, mais medidas de baixa precisão ganharam de poucas medidas precisas. Isso pede revisar a forma da hipótese: o termo $\log_2(1+\mathrm{SNR})$ superestima a informação útil quando o SNR é alto. Detalhes em [docs/02-resultados.md](docs/02-resultados.md#e12-canal-quantizado-e-ruidoso).
+
+## Limites
+
+O teste tem limites que precisam ficar claros. As projeções saem do gradiente exato, calculado por backpropagation; no E11 chegam ao otimizador em float32 sem ruído, e no E12 o canal é simulado. A contagem de "medidas" é só $r \times$ passos, sem custo de operação. A seção [Questões abertas](docs/03-questoes-abertas.md) trata disso.
 
 ## Trajetória
 
@@ -83,6 +96,7 @@ flowchart TD
 | [E09](experimentos/E09-expoente-texto-embaralhado) | O expoente de m(N) vem do discurso? | Não |
 | [E10](experimentos/E10-treino-com-orcamento) | Treinar já com orçamento muda a lei? | Inconclusivo |
 | [E11](experimentos/E11-canais-de-gradiente) | Quantos canais de gradiente o treino exige conforme N cresce? | Evidência parcial |
+| [E12](experimentos/E12-canal-quantizado-e-ruidoso) | Com b bits por medida, o total de bits governa a acurácia? | Não: governa r; b satura em 1 a 4 bits |
 
 ## Estrutura
 
@@ -93,7 +107,7 @@ flowchart TD
 ├── CHANGELOG.md               histórico de versões do conhecimento
 ├── pyproject.toml             dependências (Poetry), versões fixadas
 ├── poetry.lock
-├── Makefile                   atalhos: instalar, dados, e01..e11, artigo
+├── Makefile                   atalhos: instalar, dados, e01..e12, artigo
 ├── docs/
 │   ├── 01-pesquisa.md         pergunta, hipótese e o raciocínio por trás
 │   ├── 02-resultados.md       todos os números, por experimento
@@ -106,7 +120,7 @@ flowchart TD
 │   ├── hipoteses.md           registro de hipóteses e estado de cada uma
 │   └── decisoes/              registros de decisão (ADR)
 ├── experimentos/
-│   └── E01..E11/              script, README, resultados/, registros/, auxiliares/
+│   └── E01..E12/              script, README, resultados/, registros/, auxiliares/
 ├── ensaio/                    ensaio original (markdown e PDF)
 ├── artigo/                    artigo em LaTeX, duas colunas
 ├── dados/                     SHA256SUMS e instruções; dados fora do git
