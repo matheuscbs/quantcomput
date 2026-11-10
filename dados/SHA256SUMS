@@ -1,0 +1,4 @@
+# SHA-256 dos dados usados nos experimentos de 2026-11-08. Gerar com: python scripts/baixar_dados.py
+b5e88b71a1cda068e9ab1d94344c9d932338ba6da1a66def97a1aecd9cfcc87d  moby.txt
+7700f04fb67e5fa37ecd29bd5efcb80341a7f55e56f39d2d280aac71698f0900  fashion.npz
+544af1d5e84e112cd4749571dcfd8ca109818a572f850af75a3a09e093a953c4  glove-100-angular.hdf5

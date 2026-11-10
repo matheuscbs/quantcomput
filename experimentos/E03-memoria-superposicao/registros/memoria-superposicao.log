@@ -1,0 +1,17 @@
+k   d_att  d_hrr | sem limpeza: E_att  E_hrr (uJ, DRAM) razão | SRAM: razão | com limpeza V*d: razão(DRAM)
+  4     32    256 |      0.185      0.418   0.44 |   0.04 |   0.13
+  8     32    512 |      0.351      0.859   0.41 |   0.04 |   0.06
+ 16     32   1024 |      0.681      1.765   0.39 |   0.03 |   0.03
+ 32     32   1024 |      1.341      1.765   0.76 |   0.06 |   0.03
+ 64     32   4096 |      2.661      7.430   0.36 |   0.03 |   0.01
+128     32   8192 |      5.301     15.231   0.35 |   0.02 |   0.00
+256     32  16384 |     10.582     31.201   0.34 |   0.02 |   0.00
+armazenamento em bytes (float32), k pares: atenção 2*k*d_att; HRR d_hrr
+consulta ruidosa rho=0.7 k=8: d_att=32 d_hrr=1024
+consulta ruidosa rho=0.7 k=32: d_att=64 d_hrr=2048
+dois saltos k=8: d_att=32 d_hrr=None
+dois saltos k=32: d_att=32 d_hrr=None
+d=1024 k=32 acerto HRR 0.975 atenção 1.000
+d=4096 k=128 acerto HRR 0.995 atenção 1.000
+1 bilhão de vetores de 1536 dimensões em float32: 6.1 TB; com PQ de 64 bytes: 0.064 TB
+timeout 900 uv run --no-project --with numpy python -I $f.py  41,03s user 1,16s system 96% cpu 43,503 total

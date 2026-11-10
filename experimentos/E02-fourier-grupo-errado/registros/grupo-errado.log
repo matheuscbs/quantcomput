@@ -1,0 +1,20 @@
+metade da energia seria 0.500 sem estrutura. Sementes: 12
+W1_in_dct    energia em metade dos modos: média 0.564 dp 0.016
+W1_in_rand   energia em metade dos modos: média 0.508 dp 0.013
+W1_hid_dct   energia em metade dos modos: média 0.491 dp 0.008
+W1_hid_rand  energia em metade dos modos: média 0.497 dp 0.010
+W2_a_dct     energia em metade dos modos: média 0.498 dp 0.009
+W2_a_rand    energia em metade dos modos: média 0.502 dp 0.013
+W2_b_dct     energia em metade dos modos: média 0.497 dp 0.011
+ser_trained  energia em metade dos modos: média 0.489 dp 0.011
+ser_ctrl     energia em metade dos modos: média 0.495 dp 0.012
+dense    MSE teste mediana 0.0517 (q25 0.0389 q75 0.0685)
+in_dct   MSE teste mediana 0.0718 (q25 0.0578 q75 0.0879)
+in_rand  MSE teste mediana 0.0837 (q25 0.0638 q75 0.0975)
+h_dct    MSE teste mediana 0.0503 (q25 0.0328 q75 0.0608)
+h_rand   MSE teste mediana 0.0487 (q25 0.0325 q75 0.0590)
+DCT vence aleatória: eixo de entrada 0.75; oculto-oculto 0.58
+n=64: log2(n!)=296 bits; matriz n x n a 32 bits=131072 bits; razão 0.2258%
+n=1000: log2(n!)=8529 bits; matriz n x n a 32 bits=32000000 bits; razão 0.0267%
+n=100000: log2(n!)=1516704 bits; matriz n x n a 32 bits=320000000000 bits; razão 0.0005%
+timeout 900 uv run --no-project --with numpy python -I $f.py  21,78s user 0,85s system 86% cpu 26,228 total

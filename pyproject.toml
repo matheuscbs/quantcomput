@@ -1,0 +1,40 @@
+[project]
+name = "quantos-bits-custa-aprender"
+version = "0.1.0"
+description = "Experimentos sobre o limite de informação do treino de hardware físico sem backpropagation."
+authors = [{ name = "Matheus Cardoso" }]
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12,<3.13"
+# Versões fixadas pelas que estavam no cache do uv em 2026-11-09, quando os experimentos rodaram.
+# Os experimentos usaram `uv run --no-project --with <pacote>` sem versão; ver docs/06-reprodutibilidade.md.
+dependencies = [
+    "numpy==2.5.4",
+]
+
+[project.optional-dependencies]
+# E06 a E11: redes em PyTorch e GPT-2.
+torch = ["torch==2.15.0"]
+nlp = ["torch==2.15.0", "transformers==4.49.0"]
+# E04 e E05: medição de energia (só macOS com Apple Silicon) e busca vetorial.
+energia = [
+    "faiss-cpu==1.15.1",
+    "h5py==3.16.0",
+    "zeus-apple-silicon==1.1.0 ; sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
+# Download do Fashion-MNIST pelo OpenML.
+dados = ["scikit-learn==1.9.1"]
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+ruff = "*"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

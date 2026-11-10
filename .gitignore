@@ -1,0 +1,30 @@
+# Documentos pessoais e correspondência: nunca versionar
+privado/
+
+# Dados baixados (recriar com scripts/baixar_dados.py)
+dados/*
+!dados/SHA256SUMS
+!dados/README.md
+
+# Saídas de novas execuções (os resultados oficiais ficam em experimentos/*/resultados)
+saidas/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.ruff_cache/
+
+# LaTeX
+artigo/*.aux
+artigo/*.log
+artigo/*.out
+artigo/*.bbl
+artigo/*.blg
+artigo/*.toc
+artigo/*.synctex.gz
+artigo/*.fdb_latexmk
+artigo/*.fls
+
+# Sistema
+.DS_Store

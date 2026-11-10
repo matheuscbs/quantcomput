@@ -1,0 +1,22 @@
+base nula: base aleatória captura em média K/p = 0.082
+iso                      a=0.0 energia_K=0.077 C=0.085 Cw=0.086 trunc/full treino=   33.410 shift=   33.410 aleat/full=  32.827
+iso                      a=0.5 energia_K=0.233 C=0.165 Cw=0.160 trunc/full treino=   26.839 shift=   26.839 aleat/full=  31.867
+iso                      a=1.0 energia_K=0.528 C=0.308 Cw=0.315 trunc/full treino=   17.251 shift=   17.251 aleat/full=  32.079
+iso                      a=1.5 energia_K=0.797 C=0.468 Cw=0.463 trunc/full treino=    6.899 shift=    6.899 aleat/full=  30.605
+iso                      a=2.0 energia_K=0.932 C=0.542 Cw=0.536 trunc/full treino=    2.477 shift=    2.477 aleat/full=  31.985
+iso                      a=3.0 energia_K=0.996 C=0.584 Cw=0.581 trunc/full treino=    0.205 shift=    0.205 aleat/full=  32.184
+aniso                    a=0.0 energia_K=0.079 C=0.869 Cw=0.031 trunc/full treino=   16.832 shift=   12.237 aleat/full=  23.975
+aniso                    a=0.5 energia_K=0.235 C=0.943 Cw=0.051 trunc/full treino=   17.049 shift=    9.967 aleat/full=  46.316
+aniso                    a=1.0 energia_K=0.517 C=0.966 Cw=0.050 trunc/full treino=   14.343 shift=    6.284 aleat/full=  83.797
+aniso                    a=1.5 energia_K=0.769 C=0.978 Cw=0.047 trunc/full treino=    9.193 shift=    3.259 aleat/full= 126.270
+aniso                    a=2.0 energia_K=0.931 C=0.975 Cw=0.045 trunc/full treino=    2.997 shift=    1.015 aleat/full= 151.053
+aniso                    a=3.0 energia_K=0.993 C=0.983 Cw=0.039 trunc/full treino=    0.397 shift=    0.096 aleat/full= 199.474
+iso-alvo-base-aleatoria  a=0.0 energia_K=0.082 C=0.090 Cw=0.090 trunc/full treino=   32.592 shift=   32.592 aleat/full=  32.487
+isotrópico conc: Spearman treino=-0.96 shift=-0.96
+isotrópico conc_w: Spearman treino=-0.96 shift=-0.96
+anisotrópico conc: Spearman treino=-0.76 shift=-0.81
+anisotrópico conc_w: Spearman treino=0.08 shift=0.00
+limiar C=0.555, acurácia fora da amostra (iso): 0.922; prevalência truncar vence: 0.19
+mesmo limiar no aniso (ratio_in): acurácia 0.150; prevalência 0.15
+mesmo limiar no aniso (ratio_shift): acurácia 0.239; prevalência 0.24
+timeout 900 uv run --no-project --with numpy python -I $f.py  3,30s user 0,30s system 74% cpu 4,859 total

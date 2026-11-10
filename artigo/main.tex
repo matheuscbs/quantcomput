@@ -1,0 +1,149 @@
+% Artigo em duas colunas derivado do ensaio "Quantos bits custa aprender?".
+% Compilar: tectonic main.tex   (ou: make artigo, na raiz do repositório)
+\documentclass[10pt,a4paper,twocolumn]{article}
+
+\usepackage{fontspec}
+\usepackage[brazil]{babel}
+\usepackage[margin=1.8cm,columnsep=0.6cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\usepackage{microtype}
+
+\title{\textbf{Quantos bits custa aprender?}\\[2pt]
+\large Um limite de informação para o treinamento de hardware físico sem backpropagation}
+\author{Matheus Cardoso\\\small Engenheiro eletricista}
+\date{\small Versão 0.1, novembro de 2026}
+
+\newcommand{\SNR}{\mathrm{SNR}}
+
+\begin{document}
+
+\twocolumn[
+\maketitle
+\begin{abstract}
+Computadores analógicos, ópticos e quânticos têm dificuldade em executar backpropagation e medem o gradiente por perturbação, através de um canal estreito. Proponho que o custo desse treinamento seja limitado pela informação que a tarefa exige, e não pelo número de parâmetros: $T \ge I / (B \log_2(1+\SNR))$, onde $I$ é o menor número de bits de realimentação que leva a uma dada acurácia. O argumento parte da equivalência entre o algoritmo de Jordan e o gradiente multiplexado em frequência, em que o gradiente é um coeficiente de Fourier da perda perturbada. Um teste preliminar em Fashion-MNIST, com redes de 13.002 a 118.282 parâmetros e um canal ideal de $r$ projeções do gradiente por passo, mostra acurácia que não cai quando a rede cresce nove vezes. O teste não atinge o critério fixado antes de rodar e não mede bits, apenas medidas. Descrevo seus limites, as linhas de pesquisa descartadas e os critérios que refutariam a hipótese.
+\end{abstract}
+\vspace{1em}
+]
+
+\section{O problema}
+
+Computadores analógicos, ópticos e quânticos têm um problema em comum que quase não aparece nas conversas sobre eficiência em IA: o backpropagation não é natural para eles. Minha aposta para os próximos dez anos é uma lei de informação para o treinamento físico, que diga quantos bits de realimentação uma máquina precisa receber para aprender uma tarefa e quanto tempo e energia a física cobra por cada bit. Sem ela, fica difícil separar o hardware promissor do hardware que só funciona no slide.
+
+O backpropagation é um pequeno milagre digital. Baur e Strassen mostraram que o gradiente completo custa poucas vezes o preço de avaliar a função, seja qual for o número de parâmetros~\cite{baur1983}. Para isso, a máquina guarda os estados intermediários e percorre o cálculo de trás para frente. Um circuito analógico tem componentes imperfeitos e não tem esse caminho de volta exato. Num processador quântico, medir destrói o estado e copiá-lo é proibido, e Abbas et al.\ mostraram o quanto isso encarece reaproveitar informação entre as medidas~\cite{abbas2023}. Na prática, o método usual executa o circuito duas vezes por parâmetro, com muitas repetições em cada uma. Bowles et al.\ encontraram famílias de circuitos que escapam disso, ao preço de restringir o que o circuito pode fazer~\cite{bowles2025}.
+
+Em óptica linear e recíproca o caminho de volta existe: o backpropagation in situ obtém o gradiente de todas as fases com poucas passagens de luz e medidas de intensidade~\cite{hughes2018,pai2023}. A Seção~\ref{sec:fotonica} discute onde isso entra no argumento.
+
+O prêmio é grande. Tkachenko estima que o treinamento numa rede física poderia dissipar mais de dez ordens de grandeza menos que o hardware atual, numa conta que deixa de fora conversão, controle e medição, custos que o próprio autor diz dominarem hoje~\cite{tkachenko2025}. A medição é justamente onde o treino acontece.
+
+\section{De superposição a lock-in}
+
+Comecei querendo treinar uma rede em superposição. O algoritmo de Jordan coloca todas as perturbações dos parâmetros em superposição, acumula a perda como fase, e a Transformada de Fourier Quântica lê o gradiente~\cite{jordan2005}. Para uma rede clássica, porém, ele perde a disputa: o caso genérico exige da ordem de $\sqrt{d}$ consultas para $d$ parâmetros~\cite{gilyen2019}, enquanto o backpropagation não depende de $d$. Carregar dados clássicos em superposição também cobra caro~\cite{jaques2023}, e boa parte do ganho prometido nesse modelo tem versão clássica~\cite{chia2020}. A superposição interessa onde o backpropagation não existe.
+
+Lá ela já tem uma versão clássica. No gradiente multiplexado do NIST~\cite{mccaughan2023}, cada parâmetro oscila levemente na sua própria frequência, e um processo do tipo lock-in separa do sinal da perda a contribuição de cada um. O algoritmo de Jordan e o lock-in fazem a mesma conta: nos dois, o gradiente é um coeficiente de Fourier da perda perturbada.
+
+\section{A hipótese}
+
+Numa janela de duração $T$, tons só se distinguem se estiverem separados por cerca de $1/T$~\cite{gabor1946}. Com $N$ parâmetros numa banda $B$, medir o gradiente inteiro exige
+\begin{equation}
+T \ge \frac{N}{B},
+\end{equation}
+e o custo cresce com o tamanho da rede. Minha hipótese é que $N$ é o número errado:
+\begin{equation}
+\label{eq:hipotese}
+T \;\ge\; \frac{I}{B \,\log_2(1+\SNR)},
+\end{equation}
+onde $I$ é o menor número de bits de realimentação que leva a uma dada acurácia. A forma vem de Shannon~\cite{shannon1948}. A contribuição estaria em definir $I$, medir $I$ e mostrar que ele governa o tempo e a energia de máquinas reais.
+
+As transformadas entram com papéis diferentes. Fourier define quantos tons cabem. Laplace descreve o que acontece enquanto os pesos mudam: o sinal ganha decaimento e o tom vira uma linha lorentziana, com largura proporcional à taxa de mudança. Daí sai uma previsão testável: quanto maior a taxa de aprendizado, mais largas as linhas e menos canais cabem na banda. A ponte tem limite claro, porque Shannon supõe um canal estacionário e a perda de uma rede em treino muda a cada passo.
+
+\section{Evidência preliminar}
+
+Oripov et al.\ relatam que o tempo para atingir uma acurácia alvo com treino por perturbação não segue a escala linear em $N$ e muitas vezes cai quando a rede cresce~\cite{oripov2025}.
+
+\paragraph{Método.} Fashion-MNIST, MLP com duas camadas ocultas de largura 16 a 128 ($N$ de 13.002 a 118.282), Adam com taxa $10^{-3}$, lotes de 128, 1.500 passos, duas sementes. Em cada passo, o gradiente exato $g$ é calculado por backpropagation e projetado em $r$ direções gaussianas normalizadas; o otimizador recebe $VV^\top g$ no lugar de $g$. O canal simulado é, portanto, ideal: $r$ números reais em float32, sem ruído, e nenhum custo físico de medição é contado. Critério fixado antes de rodar: o menor $r$ que chega a menos de 2 pontos do backprop.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=5.4cm,
+  xmode=log, log basis x=2,
+  xtick={8,16,32,64,128}, xticklabels={8,16,32,64,128},
+  xlabel={$r$ (projeções por passo)}, ylabel={acurácia de teste (\%)},
+  ymin=65, ymax=89, grid=major, grid style={gray!20},
+  legend style={font=\scriptsize, at={(0.5,-0.30)}, anchor=north, draw=none},
+  legend columns=2,
+  every axis plot/.append style={thick}]
+\addplot[blue, mark=*] coordinates {(8,69.6)(16,74.0)(32,75.8)(64,77.8)(128,78.8)};
+\addlegendentry{aleatório, $N$=13.002}
+\addplot[blue!50!black, mark=square*] coordinates {(8,74.2)(16,75.9)(32,77.6)(64,79.1)(128,80.7)};
+\addlegendentry{aleatório, $N$=118.282}
+\addplot[orange, mark=triangle*, dashed] coordinates {(8,74.1)(16,74.0)(32,75.1)(64,76.2)(128,78.0)};
+\addlegendentry{adaptativo, $N$=118.282}
+\addplot[gray, dotted, domain=8:128, samples=2] {84.5};
+\addlegendentry{backprop, $N$=13.002}
+\addplot[black, dotted, domain=8:128, samples=2] {87.0};
+\addlegendentry{backprop, $N$=118.282}
+\end{axis}
+\end{tikzpicture}
+\caption{Acurácia com $r$ projeções do gradiente por passo (média de duas sementes). Com $r$ fixo, a rede nove vezes maior não perde acurácia.}
+\label{fig:e11}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Acurácia de teste (\%) no modo aleatório.}
+\label{tab:e11}
+\begin{tabular}{rcccc}
+\toprule
+$N$ & backprop & $r=8$ & $r=32$ & $r=128$ \\
+\midrule
+13.002 & 84,5 & 69,6 & 75,8 & 78,8 \\
+26.506 & 85,6 & 72,6 & 77,3 & 80,1 \\
+55.050 & 86,5 & 73,6 & 77,1 & 80,3 \\
+118.282 & 87,0 & 74,2 & 77,6 & 80,7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Resultados.} Com $r=8$ a acurácia foi de 69,6\% na rede menor e 74,2\% na maior; com $r=128$, de 78,8\% e 80,7\% (Fig.~\ref{fig:e11}, Tab.~\ref{tab:e11}). Nove vezes mais parâmetros não pioraram o resultado, e 12.000 medidas levaram a rede de 118 mil parâmetros a 74\%, contra 10\% do acaso. Nenhum valor de $r$ até 128 ficou a menos de dois pontos do backprop. Escolher as direções a partir das medidas anteriores foi pior que o acaso: 78,0\% contra 80,7\% na rede maior.
+
+\paragraph{Limites.} O teste mede o número de medidas, não bits: cada projeção é um float32 exato. A projeção sai do gradiente exato, o estimador não é reescalado por $N/r$, a taxa de aprendizado não foi ajustada por $r$, e há uma tarefa só, com duas sementes. Serve para mostrar que a pergunta merece ser feita.
+
+\section{Linhas descartadas}
+
+Cheguei aqui depois de descartar outras ideias, todas com critérios fixados antes de rodar. Uma memória em superposição baseada em Fourier, que eu pretendia usar no lugar da atenção do Transformer, saiu pior em energia e em acerto quando somei a limpeza do ruído. Uma medição direta de energia no meu computador falhou porque a carga de fundo era maior que o sinal; desde então só confio em joules líquidos com medidor externo ou máquina ociosa. Uma base de Fourier fixa para os pesos não ajudou nas camadas ocultas, como prevê a simetria de permutação. A atenção esparsa por conteúdo funcionou, com conexões necessárias crescendo como $N^{0,4}$ a $N^{0,5}$ no GPT-2, mas ficou como plano B.
+
+\section{A versão quântica}
+
+Pelo limite de Holevo~\cite{holevo1973}, $n$ qubits entregam no máximo $n$ bits por medida, então o número de execuções do circuito tem de ser ao menos $I/n$, antes mesmo de contar o ruído. Para que o treino seja viável, a conta precisa fechar com preparação de estado, leitura, comunicação e correção de erros incluídas. Considero vantagem verificável apenas o caso em que a acurácia, conferida classicamente em dados separados, é atingida com menor custo total que o do melhor treino clássico ou analógico. Espero encontrar isso primeiro em dados que já nascem quânticos. O método LCHS~\cite{an2023} escreve um decaimento como soma de oscilações com peso lorentziano, o que permitiria aproximar em hardware unitário o decaimento de um gradiente; a cauda lenta dessa curva e a perda de amplitude podem consumir o ganho.
+
+\section{Backpropagation in situ}
+\label{sec:fotonica}
+
+O backpropagation in situ em redes fotônicas~\cite{hughes2018,pai2023} não elimina o canal: alarga. O gradiente sai em poucas passagens, mas é lido por cerca de $N$ detectores e conversores, e o custo passa do tempo para os detectores e os bits de leitura. A pergunta da Eq.~\eqref{eq:hipotese} continua: se $I \ll N b$, a leitura pode ser quantizada de forma agressiva. Nesse quadro, o backpropagation in situ é um esquema construtivo para um canal largo, que dá um limite superior alcançável para $I$, ao lado dos esquemas por perturbação.
+
+\section{Plano e critérios de refutação}
+
+Organizaria o doutorado em quatro etapas: (1) definir $I$ e medi-lo em tarefas de complexidade crescente, com realimentação quantizada e ruidosa; (2) construir uma bancada com amplificadores operacionais e FPGA, com banda, ruído e energia medidos por instrumento externo; (3) derivar a versão quântica, com ruído de disparo e sem cópia de estados; (4) transformar o resultado em regra de projeto.
+
+A hipótese estará refutada se $I$ crescer proporcionalmente a $N$ em tarefas realistas, se a fórmula errar por ordens de grandeza na bancada, ou se o treino digital seguir mais barato por joule depois de contadas todas as conversões. Considero essa última possibilidade séria.
+
+Ainda não sei se $I$ tem uma definição única, ou se muda tanto com o modelo e o otimizador que deixa de dizer algo sobre a tarefa. Uma definição condicional, $I_{\mathcal{A}}(\varepsilon \mid \mathcal{D}, A, p_0)$, e um desenho fatorial sobre tarefa, arquitetura, inicialização e algoritmo são o primeiro passo. A dimensão intrínseca de Li et al.~\cite{li2018} é o conceito vizinho mais próximo.
+
+\section*{Código e dados}
+Código, registros completos, sementes e versões das dependências estão no repositório do projeto, sob licença MIT.
+
+\small
+\bibliographystyle{unsrtnat}
+\bibliography{referencias}
+
+\end{document}
