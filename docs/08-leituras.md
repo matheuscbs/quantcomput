@@ -64,6 +64,8 @@ Duas consequências testáveis:
 
 **Para este projeto.** Aplicado a r projeções com b bits ($s \approx 2^b$), a variância extra deixa de depender de r quando $b \ge \tfrac{1}{2}\log_2 r$. Isso dá uma previsão para o E12: com r = 128, a degradação deve cair rápido até b ≈ 3,5 bits e pouco depois disso. O QSGD supõe canal digital sem ruído físico; o canal ruidoso do E12 não tem esse amparo.
 
+> **Resultado do E12 (2026-11-10).** Com quantização, b = 2 perdeu de 0,5 a 1,1 ponto e b = 4 empatou com float32 em todos os r. A perda não cresceu de forma clara com r, então a previsão não foi confirmada nem refutada nessa grade. No canal ruidoso, 1 bit por projeção já bastou (perda máxima de 1 ponto). Ver [resultados](02-resultados.md#e12-canal-quantizado-e-ruidoso).
+
 ## 6. Backpropagation in situ em fotônica (Hughes et al., 2018; Pai et al., 2023)
 
 **Mostram.** Pelo método adjunto e pela reciprocidade de Lorentz, a derivada em relação a cada defasador sai da interferência entre o campo de ida e o campo adjunto, medida por intensidade. O número de passagens ópticas por gradiente não depende do número de parâmetros. Pai et al. demonstraram isso num chip de silício, com fotodetectores em derivações de cada braço, em tarefas de classificação 2D: 96% de acurácia de teste num caso e 98% noutro quando as fases medidas foram substituídas pelas de referência. Com as fases medidas, a acurácia de treino caiu para 87%, e o artigo atribui isso à imprecisão da medida de fase.
@@ -83,7 +85,7 @@ Duas consequências testáveis:
 | "Até onde pesquisei, essa conta ainda não foi feita" | O fenômeno (custo quase independente de N) já foi observado em tempo (Oripov) e em dimensão (Li). O que falta é medir em bits e ligar ao SNR e à energia |
 | $I$ sem conceito vizinho | $d_{\text{int}90}$ é o vizinho direto; o subespaço de topo (k direções) sugere que $I$ escala com a estrutura da tarefa |
 | Modo adaptativo descartado | O fracasso tem explicação: estimar o subespaço de topo a partir de medidas ruidosas exige acumular informação ao longo de vários passos |
-| E12 sem previsão quantitativa | QSGD prevê que a perda por quantização some a partir de $b \approx \tfrac{1}{2}\log_2 r$ |
+| E12 sem previsão quantitativa | QSGD prevê que a perda por quantização some a partir de $b \approx \tfrac{1}{2}\log_2 r$ (no E12, a perda sumiu entre 2 e 4 bits, sem dependência clara de r) |
 
 Novos experimentos sugeridos, em ordem de custo:
 
