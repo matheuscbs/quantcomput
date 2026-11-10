@@ -15,6 +15,8 @@ Cada hipótese recebe um identificador permanente. O estado muda quando um exper
 | H09 | Escolher direções de medida a partir das medidas anteriores reduz os canais necessários | refutada no E11 | E11 | adaptativo pior que aleatório (78,0% contra 80,7% no maior N) |
 | H10 | O total de bits $r \cdot b \cdot S$ governa a acurácia, e não $r$ ou $b$ separados | a testar | E12 | |
 | H11 | $I$ é dominado pela tarefa, não pelas interações com arquitetura, inicialização e algoritmo | a testar | E13 | |
+| H12 | $I$ cresce com o número de classes k da tarefa (dimensão do subespaço de topo do gradiente), não com N | a testar | E13a | sugerida por Gur-Ari et al. (2018) e Oripov et al. (2025); ver [leituras](08-leituras.md#3-o-subespaço-do-gradiente-gur-ari-et-al-2018-aghajanyan-et-al-2020) |
+| H13 | Um modo adaptativo que acumula a estimativa do subespaço de topo ao longo de vários passos se aproxima do oráculo | a testar | E13b | explica o fracasso de H09 |
 
 ## Ideias descartadas sem experimento
 

@@ -55,7 +55,9 @@ O custo de medir o gradiente inteiro cresce com o tamanho da rede.
 >
 > onde $I$ é o menor número de bits de realimentação que leva a uma dada acurácia.
 
-A forma é a capacidade de canal de Shannon (1948). O que seria novo é definir $I$, medi-lo e mostrar que ele governa tempo e energia em máquinas reais. Até onde o ensaio pesquisou, essa conta não foi feita. A afirmação de ineditismo ainda depende de uma busca sistemática (ver [base técnica](04-base-tecnica.md)).
+A forma é a capacidade de canal de Shannon (1948). O que seria novo é definir $I$, medi-lo em bits e mostrar que ele governa tempo e energia em máquinas reais.
+
+> **Atualização (2026-11-10).** O fenômeno de fundo já foi observado. Oripov et al. (2025) mostram que o tempo até a acurácia alvo quase não muda com N, embora o tempo para estimar o gradiente cresça com N. Li et al. (2018) mostram que a dimensão intrínseca quase não muda com o tamanho da rede. A contribuição possível é quantificar esse custo em bits, com SNR e energia, e ligá-lo à estrutura da tarefa. Ver [leituras](08-leituras.md).
 
 ## 5. O papel de cada transformada
 

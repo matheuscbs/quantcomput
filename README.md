@@ -101,6 +101,8 @@ flowchart TD
 │   ├── 04-base-tecnica.md     literatura por eixo
 │   ├── 05-reprodutibilidade.md ambiente, versões, sementes, dados
 │   ├── 06-roteiro.md          próximos experimentos e etapas do doutorado
+│   ├── 07-mapa-ensaio.md      cada número do ensaio → script → campo do JSON
+│   ├── 08-leituras.md         síntese da leitura dos artigos-chave
 │   ├── hipoteses.md           registro de hipóteses e estado de cada uma
 │   └── decisoes/              registros de decisão (ADR)
 ├── experimentos/
@@ -129,7 +131,9 @@ Cada experimento também roda isolado. Os comandos estão no README de cada past
 - [Questões abertas](docs/03-questoes-abertas.md): o que o E11 mede e o que não mede.
 - [Base técnica](docs/04-base-tecnica.md): referências por eixo.
 - [Reprodutibilidade](docs/05-reprodutibilidade.md): versões, sementes, hardware, dados.
-- [Roteiro](docs/06-roteiro.md): o próximo experimento (canal quantizado e ruidoso) e as quatro etapas propostas.
+- [Roteiro](docs/06-roteiro.md): próximos experimentos e as quatro etapas propostas.
+- [Mapa ensaio → script → resultado](docs/07-mapa-ensaio.md): cada número do ensaio, com verificação automática (`make verificar`).
+- [Leituras aprofundadas](docs/08-leituras.md): o que 20 artigos-chave mostram e o que muda no projeto.
 - [Arquitetura](ARQUITETURA.md): organização e versionamento.
 
 ## Como citar

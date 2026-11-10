@@ -1,6 +1,6 @@
 # Base técnica
 
-Referências organizadas pelos quatro eixos das [questões abertas](03-questoes-abertas.md), mais as do ensaio. Para cada uma, uma linha diz por que importa aqui. A lista cresce com a revisão de literatura. Uma referência só entra depois de conferida na fonte (arXiv ou editora).
+Referências organizadas pelos quatro eixos das [questões abertas](03-questoes-abertas.md), mais as do ensaio. Para cada uma, uma linha diz por que importa aqui. A lista cresce com a revisão de literatura. Uma referência só entra depois de conferida na fonte (arXiv ou editora). O que cada artigo-chave mostra, com números conferidos no texto completo, está em [leituras aprofundadas](08-leituras.md).
 
 ```mermaid
 mindmap
@@ -44,7 +44,9 @@ mindmap
 | Referência | Por que importa |
 |---|---|
 | Alistarh et al. (2017), *QSGD*, [arXiv:1610.02132](https://arxiv.org/abs/1610.02132) | gradiente quantizado em poucos bits com garantia de convergência; esquema construtivo para b pequeno |
-| Duchi et al. (2015), [arXiv:1312.2139](https://arxiv.org/abs/1312.2139) | limites inferiores para otimização com consultas à função |
+| Duchi et al. (2015), [arXiv:1312.2139](https://arxiv.org/abs/1312.2139) | qualquer algoritmo de ordem zero paga pelo menos √d na taxa convexa |
+| Zhang, Duchi, Jordan e Wainwright (2013), *Information-theoretic lower bounds for distributed statistical estimation with communication constraints* | limite inferior de comunicação para estimar uma média em dimensão n; citado pelo QSGD como a razão de o compromisso bits × variância ser inerente (referência ainda não lida no original) |
+| Suresh, Yu, McMahan e Kumar (2016), *Distributed mean estimation with limited communication* | idem, para erro quadrático constante sem viés (referência ainda não lida no original) |
 | Shannon (1948) | capacidade do canal gaussiano, forma da hipótese |
 | Holevo (1973) | n bits por medida em n qubits |
 
@@ -79,6 +81,6 @@ Baur e Strassen (1983); Abbas et al. (2023); Bowles, Wierichs e Park (2025); Jaq
 
 ## Lacunas a cobrir
 
-- Limites inferiores para otimização estocástica com gradiente comprimido em bits.
+- Ler no original os limites inferiores de comunicação (Zhang et al., 2013; Suresh et al., 2016) e procurar versões para otimização, não só estimação.
 - Referência primária e verificada para treino sem backpropagation de redes físicas (Momeni et al., 2023).
 - Busca sistemática por trabalhos que já relacionem capacidade de canal e custo de treino físico, antes de qualquer afirmação de ineditismo.

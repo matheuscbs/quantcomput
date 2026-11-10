@@ -42,6 +42,12 @@ Quantização: escala por passo (por exemplo, a norma das projeções) transmiti
 
 Desenho fatorial com pelo menos duas tarefas, duas arquiteturas, duas distribuições de inicialização e dois algoritmos, medindo o menor total de bits para uma acurácia alvo. Decompor $\log I$ em efeitos principais e interações. Ver [questão 3](03-questoes-abertas.md#3-como-definir-i).
 
+### E13a a E13c: sugeridos pela leitura
+
+- **E13a**: Fashion-MNIST com 2, 5 e 10 classes, mesmos r e N; testa se o total de bits acompanha k (H12).
+- **E13b**: modo adaptativo que acumula a estimativa do subespaço de topo; comparado ao oráculo (H13).
+- **E13c**: $d_{\text{int}90}$ (Li et al., 2018) das redes do E11, para comparar subespaço fixo com projeções renovadas.
+
 ### E14: perturbação real
 
 Trocar a projeção exata por uma medida que hardware sem backpropagation conseguiria fazer: diferenças finitas da perda em direções aleatórias, ou perturbação multiplexada em frequência com lock-in simulado. Conta avaliações de função e tempo de janela, e testa a previsão da linha lorentziana (taxa de aprendizado maior, linhas mais largas).
