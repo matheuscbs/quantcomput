@@ -2,12 +2,17 @@
 
 ## Próximos passos imediatos
 
+> **Estado em 2026-11-16 (v0.3.0).** E12 a E16 feitos. E13 = desenho fatorial (inclui o antigo E13a); E14 = perturbação real; E15 = antigo E13d; E16 = lote acima de $B_{\text{simple}}$. Vereditos em [hipóteses](hipoteses.md). Os próximos passos estão no fim deste documento.
+
 ```mermaid
 flowchart LR
-    A["Reproduzir E11<br/>com versões fixadas"] --> B["E12: canal quantizado<br/>e ruidoso"]
-    B --> C["E13: desenho fatorial<br/>tarefa × arquitetura ×<br/>inicialização × algoritmo"]
-    C --> D["E14: perturbação real<br/>(diferenças finitas ou tons),<br/>sem gradiente exato"]
-    D --> E["Bancada analógica"]
+    A["E11 e E12<br/>feitos"] --> C["E13 fatorial de I<br/>feito"]
+    A --> D["E14 perturbação real<br/>feito"]
+    A --> F["E15 e E16 ruído<br/>do minilote, feitos"]
+    C --> G["Próximos: E17 tarefas maiores,<br/>E18 ruído de avaliação,<br/>E19 limite inferior"]
+    D --> G
+    F --> G
+    G --> E["Bancada analógica"]
 ```
 
 ### Reproduzir E11
@@ -57,6 +62,14 @@ Medir, em cada passo, a variância das projeções entre minilotes e compará-la
 ### E14: perturbação real
 
 Trocar a projeção exata por uma medida que hardware sem backpropagation conseguiria fazer: diferenças finitas da perda em direções aleatórias, ou perturbação multiplexada em frequência com lock-in simulado. Conta avaliações de função e tempo de janela, e testa a previsão da linha lorentziana (taxa de aprendizado maior, linhas mais largas).
+
+## Próximos experimentos (depois da v0.3)
+
+- **E17, tarefas maiores.** Repetir o E13 com CIFAR-10 e CIFAR-100 (k até 100) e com redes convolucionais, para testar se $I$ continua dominado pela tarefa e medir o expoente em k sem misturar k com a identidade das classes (subconjuntos aleatórios de classes, várias amostras por k).
+- **E18, ruído de avaliação.** No E14, somar ruído à leitura de cada perda (térmico e de disparo) e deriva dos pesos, para ver se a vantagem da leitura diferencial se mantém e onde ela some.
+- **E19, mínimo sobre algoritmos e limite inferior.** Comparar protocolos (projeções aleatórias, direções do subespaço de topo estimado, SPSA) na mesma tarefa, e estimar um limite inferior de $I$ pelo argumento de Fano (Agarwal et al.).
+- **H13 (modo adaptativo que acumula o subespaço de topo)** continua a testar.
+- **Regime em que o canal domina.** Não alcançável em Fashion-MNIST com lotes até 32.768 (E16). Exige tarefa com $B_{\text{simple}}$ menor ou estimativa do gradiente com menos ruído de amostragem.
 
 ## Etapas do doutorado (propostas no ensaio)
 

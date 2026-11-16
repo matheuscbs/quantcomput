@@ -78,6 +78,32 @@ Duas consequências testáveis:
 
 **Para este projeto.** A termodinâmica estocástica liga a dissipação mínima à informação adquirida durante o aprendizado, e Tkachenko estima a economia potencial de redes físicas excluindo conversão, controle e medição. Esses dois trabalhos dão a ponte entre bits de realimentação e joules, que é a terceira parte da hipótese (energia). A leitura detalhada fica para a próxima rodada.
 
+## 8. Ruído do minilote (McCandlish et al., 2018; Smith et al., 2018)
+
+Leitura de 2026-11-16, no texto completo (notebook `17716a39`; nota no vault: *Ruído, Leitura e Energia no Treino Físico*).
+
+**Mostram.** A escala de ruído do gradiente $B_{\text{simple}} = \mathrm{tr}(\Sigma)/|G|^2$ dá o erro relativo esperado de uma estimativa com lote B: $\mathbb{E}|G_{\text{est}} - G|^2/|G|^2 = B_{\text{simple}}/B$ (Eq. 2.10). $B_{\text{simple}}$ e $B_{\text{noise}}$ "typically differ only by a small constant multiplicative factor", o tamanho crítico de lote fica em $B_{\text{crit}} \approx B_{\text{noise}}$, e "the noise scale increases as the loss decreases". Smith et al. usam a escala de ruído $g \approx \epsilon N/B$ e mostram que aumentar o lote equivale a reduzir a taxa.
+
+**Para este projeto.** Numa direção aleatória de norma unitária, a mesma conta dá $\mathrm{SNR}_B = B/B_{\text{simple}}$. Os valores do E15 e do E16 correspondem a $B_{\text{simple}}$ de cerca de 565 a 5.079, crescente com o lote porque os lotes maiores chegam a perdas menores. Isso explica a H14b reprovada no E15 e o E16 inconclusivo.
+
+## 9. Limites inferiores de ordem zero (Agarwal et al., 2012; Shamir, 2013)
+
+**Mostram.** Agarwal et al. reduzem a otimização a identificar um vértice de hipercubo e aplicam a desigualdade de Fano, com a informação mútua entre as respostas do oráculo e o parâmetro escondido. Shamir mostra que, com uma avaliação ruidosa por consulta, em funções fortemente convexas e suaves, o erro atingível é "exactly $\Theta(\sqrt{d^2/T})$".
+
+**Para este projeto.** É a moldura natural para um limite inferior de $I$. Os limites valem no pior caso convexo e pagam a dimensão; MeZO (seção 4) explica por que redes reais podem não pagar.
+
+## 10. Energia de conversão (Jonsson, 2013; survey de Murmann)
+
+**Mostram.** Sobre os conversores publicados desde 1974, "the power dissipation will quadruple for every effective bit of resolution if the ADC power is limited by thermal noise constraints (e.g., kT/C capacitor sizing)". A reta térmica passa por 1 pJ por amostra em ENOB = 9 e acompanha a fronteira para ENOB ≥ 9. Abaixo disso, "energy-per-sample levels out to an almost constant value for low resolutions", praticamente independente de ENOB de 8 bits para baixo.
+
+**Para este projeto.** Por essa reta, uma leitura de 16 bits custa cerca de $4^7 \approx 1{,}6\times10^4$ vezes uma de 9 bits, e uma de 2 bits fica no platô. A troca da leitura absoluta (16 bits) pela diferencial (2 bits) no E14 vale cerca de quatro ordens de grandeza por leitura. A estimativa cobre só o conversor.
+
+## 11. Treino físico sem modelo (Momeni et al., 2023)
+
+**Mostram.** O *model-free forward-forward training* treina redes físicas profundas "without requiring detailed knowledge of the nonlinear physical layers and train a digital twin model".
+
+**Para este projeto.** É o protocolo publicado mais próximo de um treino físico real ao qual a definição de $I$ se aplicaria. O relatório gerado pelo NotebookLM o descreveu como propagação de equilíbrio; a leitura do texto corrigiu isso.
+
 ## O que muda na pesquisa
 
 | Antes da leitura | Depois |

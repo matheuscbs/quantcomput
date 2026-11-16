@@ -2,6 +2,32 @@
 
 Histórico de versões do conhecimento e do código. Convenção em [ARQUITETURA.md](ARQUITETURA.md#versionamento-do-conhecimento): maior quando a hipótese central muda; meio para experimento ou evidência nova; menor para correções sem efeito nos resultados.
 
+## [0.3.0] - 2026-11-16
+
+### Adicionado
+
+- E13 (desenho fatorial de I), E14 (perturbação real, sem backpropagation), E15 (ruído do minilote) e E16 (lote acima de B_simple), com critérios commitados antes da execução (c383af8, 88dca6c, b2dc840).
+- `scripts/gerar_artigo.py`: gera as tabelas e figuras de E13 a E16 no artigo a partir dos JSONs oficiais.
+- Artigo v0.3 completo, com a formulação revisada e as respostas às três perguntas do instituto.
+- Hipóteses H10′, H15 e H16; leituras novas (escala de ruído do gradiente, limites inferiores de ordem zero, energia de conversores) em `docs/08-leituras.md`.
+
+### Mudado
+
+- H08 revisada: o denominador passa a ser a informação efetiva por medida, $\tfrac12\log_2(1+\mathrm{SNR}_{\text{ef}})$, com $\mathrm{SNR}_B = B/B_{\text{simple}}$ para o minilote.
+- H11 e H12 aprovadas no E13; H14 parcial (E15) e sem veredito novo no E16 (inconclusivo).
+
+### Resultados
+
+- E13: tarefa 88,5% da soma dos quadrados de $\log_2 I$, interações 6,7%; $I$ cresce com k nas 8 combinações; rede 3,4 vezes maior usa 0,90 vez os bits.
+- E14: P0 a P4 aprovados em 6 de 6 células; diferença central a no máximo 0,13 ponto da projeção exata; leitura absoluta exige 16 bits, diferencial 2.
+- E15: $\mathrm{SNR}_B$ de 0,23 a 0,75; H10′ com $R^2 = 0{,}89$ (bits nominais: 0,02); H14b reprovado.
+- E16: inconclusivo (mediana de $\mathrm{SNR}_B$ de 4,3 e 8,6, abaixo de 10); $B_{\text{simple}}$ cresceu de cerca de 565 para 5.079.
+
+### Observações
+
+- Os processos oficiais de E14 e E15 começaram alguns segundos antes do commit 88dca6c, por um erro na cadeia de comandos. O script executado é idêntico ao commitado, e nenhum resultado existia no momento do commit.
+- Lição do E12 aplicada: todos os critérios novos dizem explicitamente "em todas", "em pelo menos n de m" ou "nas duas sementes".
+
 ## [0.2.0] - 2026-11-10
 
 ### Adicionado

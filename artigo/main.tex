@@ -1,5 +1,6 @@
 % Artigo no formato IEEE (IEEEtran, duas colunas), derivado do ensaio "Quantos bits custa aprender?".
-% Compilar: tectonic main.tex   (ou: make artigo, na raiz do repositório)
+% Compilar: python3 scripts/gerar_artigo.py && tectonic main.tex   (ou: make artigo, na raiz do repositório)
+% Números de E13 a E16: artigo/resultados-gerados.tex, gerado a partir dos JSONs oficiais.
 \documentclass[journal]{IEEEtran}
 
 \usepackage{fontspec}
@@ -7,57 +8,64 @@
 \usepackage[brazil]{babel}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{float}
 \usepackage{graphicx}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 \usepackage{cite}
+\usepackage{url}
 \usepackage{xcolor}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
 
 \newcommand{\SNR}{\mathrm{SNR}}
 \renewcommand{\IEEEkeywordsname}{Palavras-chave}
 \input{e12-resultados.tex}
+\input{resultados-gerados.tex}
 
 \begin{document}
 
-\title{Quantos bits custa aprender? Um limite de informação para o treinamento de hardware físico sem backpropagation}
+\title{Quantos bits custa aprender? Informação efetiva, leitura e tarefa no treinamento de hardware sem backpropagation}
 
 \author{Matheus~Cardoso%
-\thanks{M. Cardoso é engenheiro eletricista. Versão 0.2, novembro de 2026. Código, registros e dados em repositório aberto sob licença MIT.}}
+\thanks{M. Cardoso é engenheiro eletricista. Versão 0.3, novembro de 2026. Código, registros, critérios pré-registrados e dados em repositório aberto sob licença MIT.}}
 
-\markboth{Pré-publicação, versão 0.2}{Cardoso: Quantos bits custa aprender?}
+\markboth{Pré-publicação, versão 0.3}{Cardoso: Quantos bits custa aprender?}
 
 \maketitle
 
 \begin{abstract}
-Hardware analógico, óptico e quântico raramente dispõe de um caminho de volta exato para executar backpropagation e, por isso, estima o gradiente por perturbação através de um canal de medida de banda limitada. Quando cada parâmetro é codificado num tom e separado por detecção síncrona, o limite de Gabor impõe uma janela $T \ge N/B$ para $N$ parâmetros numa banda $B$. Este trabalho propõe que o limite relevante seja dado pela informação exigida pela tarefa, $T \ge I/(B\log_2(1+\SNR))$, em que $I$ é o menor número de bits de realimentação que leva a uma acurácia alvo. Dois experimentos em Fashion-MNIST, com perceptrons de 13.002 a 118.282 parâmetros, testam consequências dessa hipótese em um canal simulado de $r$ projeções aleatórias do gradiente por passo. Com $r$ fixo, a acurácia não diminuiu quando o número de parâmetros cresceu nove vezes (E11; 69,6\% e 74,2\% com $r=8$). Com o canal quantizado e ruidoso (E12), \EdozeResumo{} Os experimentos usam o gradiente exato como fonte das projeções e não contabilizam custo físico de medição; constituem evidência preliminar, e não teste da hipótese em hardware.
+Hardware analógico, óptico e quântico raramente dispõe de um caminho de volta exato para executar backpropagation e, por isso, estima o gradiente por perturbação, lendo a perda através de um canal de medida. Este trabalho formula o custo desse treinamento em bits entregues ao otimizador e o testa em seis experimentos em Fashion-MNIST, com perceptrons de 13.002 a 407 mil parâmetros e critérios registrados no controle de versão antes de cada execução. Três resultados respondem às perguntas que a formulação original deixava abertas. Primeiro, a informação útil de cada medida é limitada pelo ruído de amostragem do minilote, que nos lotes usuais supera o sinal: a acurácia acompanha a informação efetiva por projeção, $\tfrac12\log_2(1+\SNR_{\text{ef}})$, com $R^2 = \EquinzeRdois$, e não a capacidade nominal do canal ($R^2 = \EquinzeRdoisNominal$). Segundo, o total de bits até uma acurácia alvo depende sobretudo da tarefa: num desenho fatorial com tarefa, arquitetura, inicialização e algoritmo, a tarefa explicou \EtrezeTarefa\% da variação de $\log_2 I$ e as interações, \EtrezeInter\%; $I$ cresceu com o número de classes e não com o número de parâmetros. Terceiro, medindo o gradiente por diferença central da perda, sem backpropagation, a acurácia do canal ideal se manteve, e o custo passou a ser dominado pela leitura: ler cada perda separadamente exigiu cerca de 16 bits por leitura, enquanto ler a diferença exigiu 2. Os experimentos são simulações em CPU, numa só família de tarefas, e não medem energia.
 \end{abstract}
 
 \begin{IEEEkeywords}
-treinamento físico, gradiente por perturbação, capacidade de canal, teoria da informação, computação analógica, computação quântica.
+treinamento físico, gradiente por perturbação, capacidade de canal, ruído de minilote, teoria da informação, conversores analógico-digitais, computação analógica.
 \end{IEEEkeywords}
 
 \section{Introdução}
 
-\IEEEPARstart{O}{} backpropagation obtém o gradiente completo de uma função a um custo que é um múltiplo pequeno do custo de avaliá-la, independentemente do número de parâmetros~\cite{baur1983}. A propriedade depende de armazenar os estados intermediários e percorrer o cálculo em sentido inverso. Em circuitos analógicos, componentes imperfeitos impedem um caminho de volta exato. Em processadores quânticos, a medição destrói o estado e a clonagem é proibida, o que encarece o reaproveitamento de informação entre medidas~\cite{abbas2023}; algumas famílias de circuitos recuperam o escalonamento do backpropagation ao custo de expressividade restrita~\cite{bowles2025}. Em óptica linear e recíproca, por outro lado, o método adjunto fornece o gradiente in situ~\cite{hughes2018,pai2023}, caso discutido na Seção~\ref{sec:fotonica}.
+\IEEEPARstart{O}{} backpropagation obtém o gradiente completo de uma função a um custo que é um múltiplo pequeno do custo de avaliá-la, independentemente do número de parâmetros~\cite{baur1983}. A propriedade depende de armazenar os estados intermediários e percorrer o cálculo em sentido inverso. Em circuitos analógicos, componentes imperfeitos impedem um caminho de volta exato. Em processadores quânticos, a medição destrói o estado e a clonagem é proibida, o que encarece o reaproveitamento de informação entre medidas~\cite{abbas2023}; algumas famílias de circuitos recuperam o escalonamento do backpropagation ao custo de expressividade restrita~\cite{bowles2025}. Em óptica linear e recíproca, o método adjunto fornece o gradiente in situ~\cite{hughes2018,pai2023}, caso discutido na Seção~\ref{sec:fotonica}.
 
-A motivação energética é estimada em mais de dez ordens de grandeza a favor de redes físicas, numa conta que exclui conversão, controle e medição~\cite{tkachenko2025}. Como a medição é a etapa em que o treino acontece, a quantidade de informação que precisa atravessar o canal de medida determina parte relevante desse custo.
+Sem caminho de volta, o hardware precisa aprender pelo que consegue medir: perturba os parâmetros, lê a perda e infere em que direção mudar. A motivação energética para redes físicas é estimada em mais de dez ordens de grandeza, numa conta que exclui conversão, controle e medição~\cite{tkachenko2025}. Como o treino acontece na medição, a quantidade de informação que precisa atravessar o canal de medida, e o custo de cada bit dela, determinam parte relevante do custo total.
 
-As contribuições deste trabalho são:
+A versão anterior deste trabalho propôs que o tempo de leitura fosse limitado pela informação exigida pela tarefa, $T \ge I/(B\log_2(1+\SNR))$, e mostrou num canal simulado que o número de projeções necessárias não crescia com o número de parâmetros. Três perguntas ficaram abertas: como as projeções eram obtidas e o que custava obtê-las fisicamente; qual a relação entre número de medidas, precisão de cada uma e informação recebida; e como definir $I$ separando tarefa, arquitetura, inicialização e algoritmo. Esta versão responde às três com quatro experimentos novos (E13 a E16), todos com critérios registrados antes da execução.
+
+As contribuições são:
 \begin{enumerate}
-\item uma formulação do custo de medida do gradiente como problema de capacidade de canal, a partir da equivalência entre o algoritmo de Jordan e o gradiente multiplexado em frequência (Seção~\ref{sec:formulacao});
-\item um experimento (E11) que mede a acurácia em função do número de projeções do gradiente por passo, para redes de tamanhos diferentes;
-\item um experimento (E12), com critérios registrados antes da execução, que separa número de medidas, precisão por medida e total de bits;
-\item critérios explícitos de refutação e um registro dos resultados negativos que precederam a hipótese.
+\item uma correção da hipótese: o $\SNR$ que limita a informação de cada medida é o efetivo, que soma o ruído do minilote ao do canal; o termo do minilote é $B/B_{\text{simple}}$, a escala de ruído do gradiente de McCandlish et al.~\cite{mccandlish2018}. Com essa correção, a informação efetiva explica a acurácia com $R^2 = \EquinzeRdois$ (E15), e a capacidade nominal do canal não explica ($R^2 = \EquinzeRdoisNominal$);
+\item uma medida fatorial de $I$ (E13) em que a tarefa explica \EtrezeTarefa\% da variação de $\log_2 I$, com $I$ crescente no número de classes nas \EtrezeHdoze{} combinações de arquitetura, inicialização e algoritmo, e sem crescimento com o número de parâmetros;
+\item a troca do gradiente exato por medidas físicas simuladas (E14): diferença central da perda, sem backpropagation, com a precisão do conversor como variável. A leitura da diferença, como num amplificador lock-in, reduz de cerca de 16 para 2 os bits exigidos por leitura;
+\item o registro dos critérios no controle de versão antes de cada execução e o registro dos resultados negativos, inclusive os desta versão.
 \end{enumerate}
 
 \section{Trabalhos relacionados}
 
-\paragraph*{Gradiente por perturbação} Métodos de ordem zero estimam o gradiente a partir de avaliações da função. Em otimização convexa, a taxa ótima com duas avaliações por passo cresce com a dimensão~\cite{duchi2015}. O forward gradient usa uma projeção aleatória por passo como estimador sem viés~\cite{baydin2022}, e o MeZO aplica perturbação de ordem zero ao ajuste fino de modelos de linguagem~\cite{malladi2023}. No gradiente multiplexado~\cite{mccaughan2023}, cada parâmetro oscila numa frequência própria e um processo do tipo lock-in separa as contribuições. Oripov et al.~\cite{oripov2025} distinguem duas escalas: o tempo para estimar o gradiente cresce com $N$, mas o tempo até 80\% de acurácia em Fashion-MNIST varia menos de uma ordem de grandeza quando $N$ varia mais de três. Este trabalho procura quantificar em bits o fenômeno observado nessas duas linhas.
+\paragraph*{Gradiente por perturbação e limites inferiores} Métodos de ordem zero estimam o gradiente a partir de avaliações da função. Com pares de avaliações, eles pagam um fator de no máximo $\sqrt d$ na taxa de convergência em relação ao gradiente estocástico, e o fator é atingido~\cite{duchi2015}. Com uma única avaliação ruidosa por consulta, em funções fortemente convexas e suaves, o erro atingível é $\Theta(\sqrt{d^2/T})$~\cite{shamir2013}. Esses limites vêm de reduzir a otimização a um teste de hipóteses e aplicar a desigualdade de Fano~\cite{agarwal2012}, moldura que a definição de $I$ deste trabalho adota. Em redes reais, o MeZO ajusta modelos de linguagem por perturbação, e sua taxa depende do posto efetivo local da Hessiana, não do número de parâmetros~\cite{malladi2023}. O forward gradient usa uma projeção aleatória por passo como estimador sem viés~\cite{baydin2022}. No gradiente multiplexado~\cite{mccaughan2023}, cada parâmetro oscila numa frequência própria e um processo do tipo lock-in separa as contribuições. Oripov et al.~\cite{oripov2025} mostram que o tempo para estimar o gradiente cresce com $N$, mas o tempo até 80\% de acurácia em Fashion-MNIST varia menos de uma ordem de grandeza quando $N$ varia mais de três.
 
-\paragraph*{Informação e dimensão do aprendizado} Treinar em subespaços aleatórios define uma dimensão intrínseca da tarefa para uma arquitetura~\cite{li2018}: em redes totalmente conectadas no MNIST, o número de parâmetros variou 24,1 vezes e a dimensão intrínseca, 1,33 vez. A dimensão intrínseca diminui após pré-treino~\cite{aghajanyan2020}. Após um período curto de treino, o gradiente concentra-se num subespaço de dimensão igual ao número de classes, que se mantém ao longo da otimização~\cite{gurari2018}. Medidas em bits do conteúdo aprendido incluem o comprimento de descrição prequencial~\cite{blier2018}, limites PAC-Bayes por compressão~\cite{lotfi2022} e a informação mútua entre pesos e dados~\cite{xu2017}. A quantização do gradiente em poucos bits preserva a convergência em otimização distribuída~\cite{alistarh2017}.
+\paragraph*{Estrutura da tarefa} Treinar em subespaços aleatórios define uma dimensão intrínseca: em redes totalmente conectadas no MNIST, o número de parâmetros variou 24,1 vezes e a dimensão intrínseca, 1,33 vez~\cite{li2018}. Depois de pouco treino, o gradiente concentra-se num subespaço gerado pelos autovetores de topo da Hessiana, em número igual ao de classes~\cite{gurari2018}, e os autovalores isolados da Hessiana refletem a estrutura entre classes~\cite{papyan2020}. Achille et al.~\cite{achille2019} definem a complexidade de uma tarefa em relação a uma classe de modelos, pela função de estrutura de Kolmogorov. Outras medidas em bits do que se aprende incluem o comprimento de descrição prequencial~\cite{blier2018}, limites PAC-Bayes por compressão~\cite{lotfi2022} e a informação mútua entre pesos e dados~\cite{xu2017}.
 
-\paragraph*{Treino físico} Além do método adjunto em fotônica~\cite{hughes2018,pai2023}, há treino ciente da física com modelo digital no caminho de volta~\cite{wright2022}, alinhamento por realimentação direta em hardware fotônico~\cite{launay2020,filipovich2022}, propagação de equilíbrio~\cite{scellier2017} e retropropagação por eco hamiltoniano~\cite{lopezpastor2023}. A termodinâmica estocástica relaciona a dissipação mínima à informação adquirida durante o aprendizado~\cite{goldt2017}.
+\paragraph*{Ruído do minilote e quantização} A escala de ruído do gradiente $B_{\text{simple}} = \mathrm{tr}(\Sigma)/|G|^2$ dá o erro relativo esperado de uma estimativa com lote $B$, $\mathbb{E}|G_{\text{est}}-G|^2/|G|^2 = B_{\text{simple}}/B$, e prevê o tamanho crítico de lote~\cite{mccandlish2018}; aumentar o lote reduz o ruído do SGD como reduzir a taxa de aprendizado~\cite{smith2018}. Em otimização distribuída, o QSGD transmite no máximo $2{,}8n + 32$ bits por iteração em valor esperado, com variância no máximo duas vezes maior~\cite{alistarh2017}; o TernGrad usa três níveis~\cite{wen2017}.
+
+\paragraph*{Treino físico e custo de conversão} Além do método adjunto em fotônica~\cite{hughes2018,pai2023}, há treino ciente da física com modelo digital no caminho de volta~\cite{wright2022}, treino sem backpropagation de redes físicas profundas por um esquema forward-forward sem modelo~\cite{momeni2023}, alinhamento por realimentação direta em hardware fotônico~\cite{launay2020,filipovich2022}, propagação de equilíbrio~\cite{scellier2017} e retropropagação por eco hamiltoniano~\cite{lopezpastor2023}. A termodinâmica estocástica relaciona a dissipação mínima à informação adquirida durante o aprendizado~\cite{goldt2017}. Nos conversores analógico-digitais publicados desde 1974, a energia por amostra da fronteira quadruplica a cada bit efetivo acima de cerca de 9 bits, regime limitado por ruído térmico, e fica quase constante abaixo de 8 bits~\cite{jonsson2013,murmann_survey}.
 
 \section{Formulação}
 \label{sec:formulacao}
@@ -66,18 +74,27 @@ As contribuições deste trabalho são:
 
 No algoritmo de Jordan~\cite{jordan2005}, as perturbações dos parâmetros são preparadas em superposição, a perda é acumulada como fase e a transformada de Fourier quântica lê o gradiente. Para redes clássicas genéricas o algoritmo exige da ordem de $\sqrt{d}$ consultas para $d$ parâmetros~\cite{gilyen2019}, e a carga de dados clássicos em superposição tem custo próprio~\cite{jaques2023}. No gradiente multiplexado, o parâmetro $\theta_i$ recebe a perturbação $\epsilon\cos(2\pi f_i t)$ e a componente da perda na frequência $f_i$ é proporcional a $\partial L/\partial\theta_i$. Nos dois casos, o gradiente é um coeficiente de Fourier da perda perturbada.
 
-\subsection{Limite de leitura e hipótese}
+\subsection{Limite de leitura}
 
-Numa janela de duração $T$, dois tons são resolvidos se estiverem separados por cerca de $1/T$~\cite{gabor1946}. Com $N$ tons numa banda $B$, a leitura completa do gradiente exige
-\begin{equation}
-T \ge \frac{N}{B}.
-\end{equation}
-A hipótese deste trabalho substitui $N$ pela informação exigida pela tarefa:
+Numa janela de duração $T$, dois tons são resolvidos se estiverem separados por cerca de $1/T$~\cite{gabor1946}. Com $N$ tons numa banda $B_w$, a leitura completa do gradiente exige $T \ge N/B_w$. A hipótese deste trabalho substitui $N$ pela informação exigida pela tarefa. A versão anterior usava a capacidade do canal gaussiano~\cite{shannon1948}, $\log_2(1+\SNR)$ bits por uso. Os experimentos E12 e E15 mostraram que essa forma superestima a informação útil quando o ruído do canal é menor que o ruído de amostragem, e a hipótese passa a ser
 \begin{equation}
 \label{eq:hipotese}
-T \;\ge\; \frac{I}{B\,\log_2(1+\SNR)},
+T \;\ge\; \frac{I}{B_w\, b_{\text{ef}}}, \qquad b_{\text{ef}} = \tfrac12\log_2\!\left(1+\SNR_{\text{ef}}\right).
 \end{equation}
-em que o denominador é a capacidade do canal gaussiano~\cite{shannon1948} e $I$ é o menor número de bits de realimentação que leva a uma acurácia alvo.
+
+\subsection{SNR efetivo de uma projeção}
+
+Seja $p = v^\top g_B$ a projeção do gradiente de um minilote de $B$ exemplos numa direção $v$ de norma unitária. Ela tem dois ruídos: o de amostragem, porque $g_B$ difere do gradiente da perda inteira $G$, e o do canal que a transporta. Para $v$ aleatória em $\mathbb{R}^N$, $\mathbb{E}[(v^\top G)^2] = |G|^2/N$ e a variância do minilote projetada é $\mathrm{tr}(\Sigma)/(NB)$. Daí
+\begin{equation}
+\label{eq:snrb}
+\SNR_B = \frac{B\,|G|^2}{\mathrm{tr}(\Sigma)} = \frac{B}{B_{\text{simple}}},
+\end{equation}
+que é a Eq.~(2.10) de~\cite{mccandlish2018} lida por projeção. Com um canal gaussiano de $\SNR_c$ aplicado sobre a potência recebida,
+\begin{equation}
+\label{eq:snref}
+\SNR_{\text{ef}} = \left(\frac{1}{\SNR_B} + \frac{1 + 1/\SNR_B}{\SNR_c}\right)^{-1}.
+\end{equation}
+Se $B \ll B_{\text{simple}}$, o minilote domina e bits a mais no canal quase não mudam $b_{\text{ef}}$. Se $B \gg B_{\text{simple}}$, o canal domina. A aproximação gaussiana e a independência entre os dois ruídos são hipóteses do modelo, não medidas.
 
 \subsection{Definição operacional de $I$}
 
@@ -86,57 +103,56 @@ Para uma tarefa $\mathcal{D}$, uma arquitetura $A$, uma distribuição de inicia
 \label{eq:I}
 I_{\mathcal{A}}(\varepsilon,\delta \mid \mathcal{D},A,p_0) = \min\{\beta : \Pr[\mathrm{acc} \ge \varepsilon] \ge 1-\delta\},
 \end{equation}
-em que $\beta$ é o total de bits entregues por $C$. Qualquer protocolo que atinge $\varepsilon$ com $\beta$ bits fornece um limite superior para $I_{\mathcal{A}}$. A minimização sobre algoritmos remove a dependência de $\mathcal{A}$; a comparação entre arquiteturas, com $\mathcal{D}$ fixo, estima a parcela atribuível à tarefa.
+em que $\beta$ é o total de bits entregues por $C$. Qualquer protocolo que atinge $\varepsilon$ com $\beta$ bits fornece um limite superior para $I_{\mathcal{A}}$. Limites inferiores vêm do argumento de Fano~\cite{agarwal2012}: os bits recebidos precisam bastar para distinguir a solução entre as alternativas. A definição é condicionada à arquitetura, como a complexidade de tarefa de~\cite{achille2019}. Ela só descreve a tarefa se a variação de $I$ entre arquiteturas, inicializações e algoritmos for pequena diante da variação entre tarefas, o que o E13 testa.
 
 \subsection{Canal não estacionário e versão quântica}
 
-Durante o treino, os pesos variam e cada tom adquire decaimento. Pela transformada de Laplace, a linha espectral assume forma lorentziana com largura proporcional à taxa de variação, o que prevê menos canais resolvíveis para taxas de aprendizado maiores. A Eq.~\eqref{eq:hipotese} supõe canal estacionário, de modo que a extensão a esse regime é uma questão em aberto. Na versão quântica, o limite de Holevo~\cite{holevo1973} restringe $n$ qubits a no máximo $n$ bits por medida, e o número de execuções do circuito é ao menos $I/n$. A combinação linear de simulações hamiltonianas~\cite{an2023} representa um decaimento como soma de oscilações com peso lorentziano e pode aproximar, em hardware unitário, o decaimento de um gradiente.
+Durante o treino, os pesos variam e cada tom adquire decaimento. Pela transformada de Laplace, a linha espectral assume forma lorentziana com largura proporcional à taxa de variação, o que prevê menos canais resolvíveis para taxas de aprendizado maiores. A Eq.~\eqref{eq:hipotese} supõe canal estacionário; a extensão a esse regime continua em aberto. Na versão quântica, o limite de Holevo~\cite{holevo1973} restringe $n$ qubits a no máximo $n$ bits por medida, e o número de execuções do circuito é ao menos $I/n$.
 
 \section{Método experimental}
 
 \subsection{Tarefa, modelos e otimização}
 
-Os experimentos usam Fashion-MNIST (60.000 imagens de treino e 10.000 de teste) e perceptrons com duas camadas ocultas de largura $w \in \{16, 32, 64, 128\}$, o que corresponde a $N$ de 13.002 a 118.282 parâmetros. O otimizador é Adam com taxa $10^{-3}$, lotes de 128 e 1.500 passos, com duas sementes.
+Todos os experimentos usam Fashion-MNIST (60.000 imagens de treino e 10.000 de teste) e perceptrons. E11 a E16 usam redes de duas camadas ocultas de largura $w \in \{16, 32, 64, 128\}$, com $N$ de 13.002 a 118.282 parâmetros; o E13 acrescenta uma rede de uma camada oculta de largura 512 (407.050 parâmetros com 10 classes). O otimizador padrão é Adam com taxa $10^{-3}$, lotes de 128 e 1.500 passos.
 
 \subsection{Canal de projeções}
 
-Em cada passo, o gradiente exato $g \in \mathbb{R}^N$ é calculado por backpropagation e projetado em $r$ direções gaussianas de norma unitária, $V \in \mathbb{R}^{N\times r}$. O otimizador recebe $\hat g = V\tilde p$ no lugar de $g$, em que $\tilde p$ é o vetor $p = V^\top g$ após o canal. O estimador não é reescalado por $N/r$. No E11, $\tilde p = p$ em float32. No E12, o canal assume três formas: quantização uniforme estocástica em $2^b$ níveis com escala $s=\max|p|$ transmitida à parte ($rb+32$ bits por passo); ruído gaussiano aditivo com $\SNR = 2^{2b}-1$ ($rb$ bits por passo); e float32 sem degradação, como controle de reprodução do E11.
+Em cada passo, $r$ direções gaussianas de norma unitária formam $V \in \mathbb{R}^{N\times r}$, e o otimizador recebe $\hat g = V\tilde p$ no lugar do gradiente, em que $\tilde p$ é o vetor de projeções $p$ depois do canal. O estimador não é reescalado por $N/r$. Nos experimentos E11, E12, E13, E15 e E16, $p = V^\top g$ vem do gradiente exato do minilote, calculado por backpropagation. No E14, $p$ é medido sem backpropagation (Seção~\ref{sec:e14m}). Os canais são: float32 sem degradação; ruído gaussiano aditivo com $\SNR_c = 2^{2b}-1$, ou seja, $b$ bits de capacidade por projeção ($rb$ bits por passo); e quantização uniforme estocástica em $2^b$ níveis com escala $s=\max|p|$ enviada em float32 ($rb+32$ bits por passo).
 
-\subsection{Critérios}
+\subsection{Medida física simulada (E14)}
+\label{sec:e14m}
 
-No E11, $r^*(N)$ é o menor $r$ com acurácia a no máximo 2 pontos do backpropagation. No E12, ajusta-se, por $N$ e por canal, a acurácia como função de $\log_2$ do total de bits (critério B1, $R^2 \ge 0{,}90$) e de $\log_2 r$ e $\log_2 b$ separadamente (B2, redução de pelo menos 50\% na soma dos quadrados dos resíduos). B3 exige que, em pelo menos 80\% das configurações, a rede maior não perca mais de 1 ponto. B4 exige que o canal float32 reproduza o E11 com diferença máxima de 0,5 ponto. Os critérios do E12 foram registrados no controle de versão antes da execução.
+Cada projeção é estimada por diferença central da perda no mesmo minilote, $p_i = [L(\theta+\epsilon v_i) - L(\theta-\epsilon v_i)]/(2\epsilon)$, com $\epsilon = 10^{-2}$, escolhido numa calibração anterior aos critérios (correlação de 0,9999 com a projeção exata). São $2r$ avaliações da perda por passo. Duas leituras foram comparadas: a absoluta, em que cada perda é lida por um conversor de $b$ bits na faixa fixa $[0, 4]$, com arredondamento determinístico, e a diferença é feita depois; e a diferencial, em que a diferença $L_+ - L_-$ é lida diretamente, com faixa adaptada a cada passo e quantização estocástica. A previsão registrada antes da execução foi que a leitura absoluta exigiria da ordem de 16 bits, porque precisa resolver $2\epsilon|v^\top g|$, da ordem de $10^{-5}$ a $10^{-4}$, numa faixa de 4.
+
+\subsection{Experimentos e critérios}
+
+A Tabela~\ref{tab:exps} resume os experimentos. Os critérios de E12 a E16 foram registrados no controle de versão antes da execução, e os vereditos aplicam os critérios como foram escritos. O commit de cada pré-registro está no apêndice.
+
+\begin{table}[t]
+\centering
+\caption{Experimentos}
+\label{tab:exps}
+\begin{tabular}{lp{0.28\columnwidth}p{0.42\columnwidth}}
+\toprule
+& Variável & Pergunta \\
+\midrule
+E11 & $r$, $N$ & o número de projeções necessário cresce com $N$? \\
+E12 & $r$, $b$, canal & a acurácia segue o total de bits? \\
+E13 & tarefa, arquitetura, inicialização, algoritmo & $I$ é da tarefa? \\
+E14 & forma de leitura, $b$ & o resultado sobrevive sem backpropagation? \\
+E15 & lote $B \le 2048$, $b$ & o minilote limita a informação útil? \\
+E16 & lote $B \ge 8192$, $b$ & com o minilote limpo, o canal pesa? \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No E13, cada passo entrega $r = 32$ projeções por um canal gaussiano de 2 bits, 64 bits por passo, e $I$ é o total de bits até a primeira avaliação (a cada 10 passos) que atinge o alvo $1/k + 0{,}8\,(\text{ref}_k - 1/k)$, em que $\text{ref}_k$ é a acurácia média do backpropagation na tarefa de $k$ classes (as classes $0$ a $k-1$). O desenho é completo: $k \in \{2, 5, 10\}$, duas arquiteturas, duas inicializações (padrão do PyTorch e Xavier normal) e dois algoritmos (Adam e SGD com momento 0,9 e taxa 1,0, escolhida numa calibração prévia), com 3 sementes. A soma dos quadrados de $\log_2 I$ entre as 24 células é decomposta com contrastes ortogonais.
+
+Nos E15 e E16, $\SNR_B$ é medido durante o treino: a cada 100 passos, as $r$ direções do passo são aplicadas aos gradientes de 8 minilotes independentes, e a variância entre eles dá o ruído de amostragem. $b_{\text{ef}}$ vem da Eq.~\eqref{eq:snref}.
 
 \section{Resultados}
 
-\subsection{E11: número de projeções}
-
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-  width=\columnwidth, height=5.2cm,
-  xmode=log, log basis x=2,
-  xtick={8,16,32,64,128}, xticklabels={8,16,32,64,128},
-  xlabel={$r$ (projeções por passo)}, ylabel={acurácia de teste (\%)},
-  ymin=65, ymax=89, grid=major, grid style={gray!20},
-  legend style={font=\scriptsize, at={(0.5,-0.32)}, anchor=north, draw=none},
-  legend columns=2,
-  every axis plot/.append style={thick}]
-\addplot[blue, mark=*] coordinates {(8,69.6)(16,74.0)(32,75.8)(64,77.8)(128,78.8)};
-\addlegendentry{aleatório, $N$=13.002}
-\addplot[blue!50!black, mark=square*] coordinates {(8,74.2)(16,75.9)(32,77.6)(64,79.1)(128,80.7)};
-\addlegendentry{aleatório, $N$=118.282}
-\addplot[orange, mark=triangle*, dashed] coordinates {(8,74.1)(16,74.0)(32,75.1)(64,76.2)(128,78.0)};
-\addlegendentry{adaptativo, $N$=118.282}
-\addplot[gray, dotted, domain=8:128, samples=2] {84.5};
-\addlegendentry{backprop, $N$=13.002}
-\addplot[black, dotted, domain=8:128, samples=2] {87.0};
-\addlegendentry{backprop, $N$=118.282}
-\end{axis}
-\end{tikzpicture}
-\caption{E11: acurácia de teste em função do número de projeções por passo (média de duas sementes).}
-\label{fig:e11}
-\end{figure}
+\subsection{E11 e E12: projeções e bits}
 
 \begin{table}[t]
 \centering
@@ -154,35 +170,86 @@ $N$ & backprop & $r=8$ & $r=32$ & $r=128$ \\
 \end{tabular}
 \end{table}
 
-Com $r$ fixo, a acurácia aumentou com $N$ em todas as colunas da Tabela~\ref{tab:e11} (Fig.~\ref{fig:e11}). Com $r=8$, 12.000 projeções levaram a rede de 118.282 parâmetros a 74,2\%, contra 10\% do acaso. Nenhum $r \le 128$ atingiu o critério de 2 pontos, de modo que $r^*$ ficou acima da grade e o expoente de escala não foi definido. Escolher metade das direções a partir das estimativas anteriores reduziu a acurácia (78,0\% contra 80,7\% com $r=128$ na rede maior).
-
-\subsection{E12: medidas, precisão e bits}
+Com $r$ fixo, a acurácia aumentou com $N$ em todas as colunas da Tabela~\ref{tab:e11}. Com $r=8$, 12.000 projeções levaram a rede de 118.282 parâmetros a 74,2\%, contra 10\% do acaso. Nenhum $r \le 128$ chegou a 2 pontos do backpropagation, de modo que o expoente de escala não foi definido.
 
 \EdozeTexto
 
+\subsection{E15 e E16: o minilote limita a informação de cada medida}
+
+\EquinzeTabela
+\EquinzeFigura
+
+O SNR do minilote por projeção ficou abaixo de 1 em todos os lotes do E15 (Tabela~\ref{tab:e15}): cada projeção carrega mais ruído de amostragem que sinal. Os valores correspondem a $B_{\text{simple}}$ entre cerca de 565 e 2.730, que cresce ao longo das execuções com lote maior, como esperado quando a perda cai~\cite{mccandlish2018}. Nesse regime, o canal de 1 bit ($\SNR_c = 3$) custou menos de 1 ponto em todos os lotes do E15, e a informação efetiva explicou a acurácia das 15 células ruidosas e float com $R^2 = \EquinzeRdois$, contra $R^2 = \EquinzeRdoisNominal$ com os bits nominais do canal (Fig.~\ref{fig:e15}). O lote maior aumentou a acurácia com o mesmo número de projeções. O critério H14b do E15, que pedia que a penalidade de 1 bit crescesse com o lote, reprovou: nenhum lote do E15 passou de $B_{\text{simple}}$.
+
+O E16 tentou alcançar esse regime com lotes de 8.192 e 32.768. O critério de regime, mediana de $\SNR_B$ de pelo menos 10 no maior lote, falhou (4,3 e 8,6 nas duas sementes), e o E16 é inconclusivo pelo registro. O motivo é o crescimento de $B_{\text{simple}}$ à medida que a perda cai: o lote cresceu 256 vezes em relação ao menor lote do E15, e $B_{\text{simple}}$, cerca de 9 vezes. Com 60.000 imagens de treino, não há lote muito maior disponível nesta tarefa. Em leitura exploratória, a informação efetiva explica as \EdezesseisCelulas{} células ruidosas e float do E15 e do E16 com $R^2 = \EdezesseisRdois$, contra $\EdezesseisRdoisNominal$ com os bits nominais, e a acurácia do canal float parou em cerca de 82\% nos dois lotes do E16. A partir daí, o limite parece vir do número de projeções, não da precisão de cada uma.
+
+\subsection{E14: medida sem backpropagation}
+
+\EquatorzeTabela
+
+Os cinco critérios do E14 foram aprovados em todas as células (Tabela~\ref{tab:e14}). A leitura exata repetiu o E11 sem diferença, e a diferença central, sem backpropagation, ficou a no máximo 0,13 ponto da projeção exata. A rede de 118.282 parâmetros não perdeu acurácia em relação à de 13.002 em nenhuma combinação. A forma de leitura decidiu a precisão exigida. Lendo cada perda separadamente, o menor conversor que chegou a 1 ponto da diferença em float32 foi de 16 bits nas seis células: com 8 bits a acurácia ficou entre 27\% e 54\%, e com 12 bits perdeu de 3 a 14 pontos. A conta $\log_2[4/(2\epsilon\,\mathrm{med}|v^\top g|)]$, com a mediana medida das projeções, dá de 14,8 a 16,5 bits, e a previsão registrada era da ordem de 16. Lendo a diferença diretamente, 2 bits bastaram, com perda máxima de 1,1 ponto; 1 bit custou de 4,5 a 7,9 pontos. Em avaliações da perda, a medida por perturbação custou $2r$ passes de ida por passo, contra o equivalente a 3 do backpropagation: em 1.500 passos, de 24.000 ($r = 8$) a 384.000 ($r = 128$), contra 4.500.
+
+\subsection{E13: o que determina $I$}
+
+\EtrezeTabela
+\EtrezeFigura
+
+As \EtrezeExec{} execuções atingiram o alvo (\EtrezeCens{} censuradas). A tarefa explicou \EtrezeTarefa\% da soma dos quadrados de $\log_2 I$ entre as células, e todas as interações somadas, \EtrezeInter\%. Entre os outros efeitos, o maior foi o do algoritmo (\EtrezeAlg\%), seguido da interação entre inicialização e algoritmo (\EtrezeZG\%) e da inicialização (\EtrezeInit\%); a arquitetura explicou \EtrezeArq\%. $I$ cresceu com $k$ nas \EtrezeHdoze{} combinações (Tabela~\ref{tab:e13} e Fig.~\ref{fig:e13}), com inclinação exploratória de \EtrezeExpK{} em escala log-log. A rede larga, com cerca de 3,4 vezes mais parâmetros, usou em média geométrica \EtrezeRazaoLarga{} vez os bits da rede profunda. A interação visível é a do SGD com momento, que precisou de cerca de duas vezes os bits do Adam com a inicialização padrão e de menos bits com a Xavier.
+
 \section{Discussão}
 
-\subsection{O que os resultados sustentam}
+\subsection{Respostas às três perguntas}
 
-O E11 é compatível com a hipótese de que o número de canais necessários não cresce com $N$ nessa tarefa, mas não a testa: a acurácia aumentou com $N$, o que também seria esperado se redes maiores fossem apenas mais fáceis de otimizar. O E11 mede número de medidas, não bits; o E12 introduz a precisão por medida como variável e mostra que, nesse regime, os bits não são intercambiáveis: uma projeção adicional vale mais que bits adicionais de precisão, que saturam entre 1 e 4 bits. A Eq.~\eqref{eq:hipotese} trata como equivalentes os bits obtidos por mais medidas e os obtidos por maior $\SNR$; os dados indicam que o termo $\log_2(1+\SNR)$ superestima a informação útil quando o $\SNR$ é alto. Uma explicação possível, não testada, é que a variância do minilote já domine o erro de cada projeção, tornando invisível o ruído de canal de menor variância. Para o hardware, o resultado favorece leitura de baixa resolução e muitas medidas. Nenhum dos dois experimentos mede a informação mútua efetiva entre as medidas e o gradiente. A concentração do gradiente num subespaço de dimensão próxima ao número de classes~\cite{gurari2018} é compatível com dois resultados do E11: reaproveitar gradientes verdadeiros anteriores aproxima o desempenho do backpropagation com poucas projeções, e reaproveitar estimativas, dominadas por componentes aleatórias, não o faz. Essa leitura sugere que $I$ dependa da estrutura da tarefa, hipótese a testar variando o número de classes.
+\paragraph*{Como as projeções são medidas e o que custam} No E11 e no E12, cada projeção saiu do gradiente exato, e nenhum custo físico era contado. O E14 trocou essa projeção pela medida que um hardware sem backpropagation faria, duas leituras da perda com os pesos perturbados, e a acurácia não mudou. O custo agora tem três parcelas contadas: avaliações da perda ($2r$ por passo), conversões ($2r$ na leitura absoluta, $r$ na diferencial) e bits por conversão (16 contra 2). Num computador digital, a conta é desfavorável à perturbação: de 5 a 85 vezes mais avaliações da perda que o backpropagation para a mesma acurácia. A vantagem só existe se a avaliação física da perda for muito mais barata que a digital, que é a premissa do treino físico~\cite{tkachenko2025}, não um resultado deste trabalho.
+
+\paragraph*{Medidas, precisão e informação} São três grandezas distintas, e os experimentos as separam. O número de medidas é $M = rS$. A precisão por medida é limitada por $\tfrac12\log_2(1+\SNR_c)$ no canal. A informação efetivamente útil é limitada pelo pior dos dois ruídos, e o E15 mostra que, com lotes abaixo de $B_{\text{simple}}$, esse limite é o do minilote: cerca de 0,1 a 0,4 bit por projeção, abaixo do que um canal de 1 bit já entrega. Isso explica por que, no E12, uma medida a mais valeu mais que bits a mais de precisão. A Eq.~\eqref{eq:hipotese} com $b_{\text{ef}}$ no lugar da capacidade nominal é a forma que os dados sustentam. A medida direta da informação mútua entre medidas e gradiente continua por fazer; $b_{\text{ef}}$ é uma aproximação gaussiana.
+
+\paragraph*{Como definir $I$} A definição da Eq.~\eqref{eq:I} é operacional e condicionada. No desenho fatorial, a parcela da tarefa foi grande o bastante para que $I$ descreva a tarefa nesse conjunto de arquiteturas, inicializações e algoritmos, e as interações ficaram abaixo do limite fixado. O crescimento com $k$ é compatível com o subespaço de topo de dimensão $k$~\cite{gurari2018,papyan2020}. A previsão mais simples a partir dele seria $I \propto k$; a inclinação medida foi maior, e não há explicação testada para isso. Como $k$ muda junto com quais classes entram na tarefa, o efeito de $k$ não está separado do efeito da dificuldade de cada classe. O $I$ medido é um limite superior para um protocolo fixo; o mínimo sobre algoritmos e um limite inferior pelo argumento de Fano~\cite{agarwal2012} são o passo seguinte.
+
+\subsection{Por que o custo não acompanha $N$}
+
+Os limites inferiores de ordem zero pagam a dimensão: $\sqrt d$ com pares de avaliações~\cite{duchi2015} e $d^2$ com uma avaliação ruidosa~\cite{shamir2013}. Eles valem no pior caso, sobre funções convexas genéricas. Nos E11, E13 e E14 o custo não acompanhou $N$. A explicação compatível com a literatura é a do MeZO: a taxa depende do posto efetivo da Hessiana, não de $d$~\cite{malladi2023}, e esse posto é ligado ao número de classes~\cite{gurari2018}. Os dados não testam essa explicação diretamente.
+
+\subsection{Energia de leitura}
+
+A energia de leitura não foi medida, mas pode ser estimada pela fronteira dos conversores publicados. Acima de cerca de 9 bits efetivos, a energia por amostra quadruplica a cada bit, passando por cerca de 1~pJ em 9 bits; abaixo de 8 bits, ela quase não cai~\cite{jonsson2013}. Por essa reta, uma leitura de 16 bits custa cerca de $4^{7} \approx 1{,}6\times10^4$ vezes uma de 9 bits, e uma de 2 bits fica no patamar de baixa resolução, perto do custo de 8 bits. A leitura diferencial do E14 economiza, portanto, cerca de quatro ordens de grandeza por leitura, e faz metade das leituras. Quase toda a economia vem de sair do regime de alta resolução; descer de 8 para 2 bits economiza pouco. Para o projeto de hardware, a forma de leitura pesa mais na energia do que o número de medidas. A estimativa cobre só o conversor; a energia da avaliação física da perda, do controle e da escrita dos pesos fica fora.
 
 \subsection{Backpropagation in situ}
 \label{sec:fotonica}
 
-O método adjunto em fotônica linear~\cite{hughes2018,pai2023} obtém o gradiente de todas as fases em poucas passagens ópticas, com leitura por intensidade em cada defasador. Nesse esquema o canal de realimentação é largo: a leitura envolve cerca de $N$ detectores e conversores, e o custo desloca-se da duração da janela para o número de detectores e a resolução de conversão. Na formulação da Eq.~\eqref{eq:I}, o backpropagation in situ é um protocolo que fornece um limite superior para $I$ com $\beta \approx N b$ bits por passo. Se $I \ll Nb$, a resolução de leitura pode ser reduzida. O método depende de reciprocidade e de linearidade óptica, e as não linearidades permanecem, em geral, na parte eletrônica.
+O método adjunto em fotônica linear~\cite{hughes2018,pai2023} obtém o gradiente de todas as fases em poucas passagens ópticas, com leitura por intensidade em cada defasador. O canal de realimentação é largo: a leitura envolve cerca de $N$ detectores e conversores, e o custo sai da duração da janela para o número de detectores e a resolução de conversão. Na formulação da Eq.~\eqref{eq:I}, o backpropagation in situ é um protocolo que fornece um limite superior para $I$ com $\beta \approx N b$ bits por passo. O E15 sugere que a resolução útil de cada leitura é limitada pelo ruído de amostragem, e a curva de energia dos conversores~\cite{jonsson2013} indica que a economia está em evitar o regime de alta resolução. No experimento de Pai et al.~\cite{pai2023}, a imprecisão na medida de fase baixou a acurácia de treino para 87\%, contra 95\% com as fases de referência. O método depende de reciprocidade e de linearidade óptica, e as não linearidades ficam, em geral, na parte eletrônica.
 
 \section{Limitações e critérios de refutação}
 
-As projeções são calculadas a partir do gradiente exato e não por perturbação física; o estimador não é reescalado; a taxa de aprendizado não foi ajustada por $r$; há uma tarefa e duas sementes; nenhum custo de avaliação de função, janela de integração ou energia foi contabilizado. A hipótese será considerada refutada se $I$ crescer proporcionalmente a $N$ em tarefas realistas, se a Eq.~\eqref{eq:hipotese} errar por ordens de grandeza em bancada, ou se o treino digital permanecer mais barato por joule depois de contabilizadas todas as conversões.
+Todos os experimentos usam uma família de tarefas (subconjuntos de Fashion-MNIST), perceptrons pequenos, CPU e duas ou três sementes. A diferença central do E14 é calculada em float32 sobre a mesma perda digital; nenhum ruído físico de avaliação foi simulado além da quantização do conversor. O estimador não é reescalado e a taxa de aprendizado não foi ajustada por $r$. Nenhuma energia foi medida; a estimativa de energia de conversão usa a fronteira publicada de conversores, não um circuito. O $I$ medido é um limite superior para um protocolo fixo. A hipótese será considerada refutada se $I$ crescer proporcionalmente a $N$ em tarefas maiores, se a Eq.~\eqref{eq:hipotese} errar por ordens de grandeza em bancada, ou se o treino digital continuar mais barato por joule depois de contabilizadas todas as conversões.
 
 \section{Conclusão}
 
-O custo de treinar hardware sem backpropagation foi formulado como problema de capacidade de canal, com a informação exigida pela tarefa no lugar do número de parâmetros. Em um canal simulado, o número de projeções necessário para uma acurácia dada não aumentou com o tamanho da rede no intervalo testado. Com precisão limitada por projeção, a acurácia dependeu do número de projeções e não do total de bits, o que exige revisar a forma da Eq.~\eqref{eq:hipotese} no regime de alto $\SNR$. Os próximos passos são a comparação entre ruído de canal e ruído de minilote, um desenho fatorial para separar as dependências de $I$ em relação a tarefa, arquitetura, inicialização e algoritmo, a substituição da projeção exata por perturbação física, e a medição em bancada analógica com instrumentação externa.
+O custo de treinar hardware sem backpropagation foi formulado em bits entregues ao otimizador e testado em seis experimentos com critérios registrados antes da execução. Nas redes e na tarefa testadas, esse custo dependeu da tarefa e não do número de parâmetros: a tarefa explicou \EtrezeTarefa\% da variação de $\log_2 I$, e $I$ cresceu com o número de classes. A informação útil de cada medida foi limitada pelo ruído de amostragem do minilote, de modo que a capacidade nominal do canal precisa ser substituída pelo $\SNR$ efetivo, cujo termo de amostragem é $B/B_{\text{simple}}$. O resultado se manteve com medidas por perturbação, sem backpropagation, e o custo passou a ser dominado pela forma de leitura: 16 bits por leitura absoluta contra 2 por leitura diferencial. Ficam em aberto o regime em que o canal domina o minilote, que nenhum lote desta tarefa alcançou; a explicação do crescimento de $I$ com $k$ mais rápido que linear; a medida direta da informação mútua; tarefas maiores; e a medição de energia em bancada analógica com instrumentação externa, que é a etapa seguinte do projeto.
 
 \appendices
+\section{Registro dos critérios}
+
+\begin{table}[H]
+\centering
+\caption{Commits de pré-registro e vereditos}
+\label{tab:registro}
+\begin{tabular}{llp{0.5\columnwidth}}
+\toprule
+& Commit & Veredito \\
+\midrule
+E12 & 14e5011 & B1 reprovado; B2 aprovado no canal ruidoso; B3 e B4 aprovados \\
+E13 & c383af8 & H11 aprovada; H12 aprovada (\EtrezeHdoze{} de 8) \\
+E14 & 88dca6c & P0 a P4 aprovados (6 de 6 células cada) \\
+E15 & 88dca6c & H14 parcial (H14a aprovado, H14b reprovado); H10$'$ aprovada \\
+E16 & b2dc840 & inconclusivo (R0 reprovado: $\SNR_B$ abaixo de 10) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Linhas de pesquisa descartadas}
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \caption{Hipóteses anteriores e motivo do descarte}
 \label{tab:descartadas}
@@ -194,12 +261,13 @@ Base de Fourier fixa nos pesos & sem ganho nas camadas ocultas, como prevê a si
 Memória em superposição no lugar da atenção & mais energia e menor acerto com chaves semelhantes \\
 Custo geométrico da memória & expoente próximo de zero na DRAM até 4~GB \\
 Atenção esparsa por conteúdo & $m \propto N^{0,4\text{ a }0,5}$ no GPT-2; mantida como alternativa \\
+Total de bits governa a acurácia (H10) & refutada no E12: $R^2$ de 0,70 a 0,84 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \section*{Disponibilidade de código e dados}
-Scripts, registros completos, sementes e versões das dependências estão no repositório do projeto, com o mapeamento entre cada afirmação e o arquivo de resultado correspondente.
+{\sloppy Scripts, registros completos, sementes, versões das dependências e o gerador das tabelas estão no repositório do projeto, com o mapeamento entre cada afirmação e o arquivo de resultado correspondente. As tabelas e figuras de E13 a E16 são geradas por \path{scripts/gerar_artigo.py} a partir dos resultados oficiais.\par}
 
 \bibliographystyle{IEEEtran}
 \bibliography{referencias}

@@ -2,7 +2,7 @@
 
 Quatro perguntas técnicas apareceram na revisão do ensaio. Todas tocam em limites reais do E11. Este documento separa, para cada uma, o que o código faz hoje, o que isso permite afirmar e o que falta.
 
-> Estado: **rascunho**. As propostas abaixo ainda não foram testadas. Mudam com o E12 e com a revisão da literatura em [base técnica](04-base-tecnica.md).
+> Estado em 2026-11-16 (v0.3.0): as quatro questões foram respondidas, até onde os experimentos permitem, por E12 a E16. Questão 1: [E14](../experimentos/E14-perturbacao-real). Questão 2: [E15](../experimentos/E15-ruido-do-minilote) e [E16](../experimentos/E16-lote-grande). Questão 3: [E13](../experimentos/E13-fatorial-de-I). Questão 4: discussão no artigo. O texto abaixo é o registro das propostas feitas antes desses testes.
 
 ```mermaid
 flowchart TD
