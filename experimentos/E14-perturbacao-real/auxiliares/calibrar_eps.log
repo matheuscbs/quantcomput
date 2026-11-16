@@ -1,0 +1,12 @@
+N=13002 inicio eps=0.1 corr=0.9975 erro_rel=0.071 |p|med=4.80e-03 t(r=128)=0.015s
+N=13002 inicio eps=0.01 corr=0.9995 erro_rel=0.033 |p|med=4.80e-03 t(r=128)=0.007s
+N=13002 inicio eps=0.001 corr=0.9998 erro_rel=0.018 |p|med=4.80e-03 t(r=128)=0.006s
+N=13002 300 passos eps=0.1 corr=0.9999 erro_rel=0.014 |p|med=9.39e-03 t(r=128)=0.007s
+N=13002 300 passos eps=0.01 corr=1.0000 erro_rel=0.001 |p|med=9.39e-03 t(r=128)=0.007s
+N=13002 300 passos eps=0.001 corr=1.0000 erro_rel=0.006 |p|med=9.39e-03 t(r=128)=0.007s
+N=118282 inicio eps=0.1 corr=0.9995 erro_rel=0.031 |p|med=1.86e-03 t(r=128)=0.079s
+N=118282 inicio eps=0.01 corr=0.9999 erro_rel=0.010 |p|med=1.86e-03 t(r=128)=0.068s
+N=118282 inicio eps=0.001 corr=0.9992 erro_rel=0.039 |p|med=1.86e-03 t(r=128)=0.067s
+N=118282 300 passos eps=0.1 corr=0.9999 erro_rel=0.014 |p|med=2.70e-03 t(r=128)=0.067s
+N=118282 300 passos eps=0.01 corr=1.0000 erro_rel=0.003 |p|med=2.70e-03 t(r=128)=0.068s
+N=118282 300 passos eps=0.001 corr=1.0000 erro_rel=0.009 |p|med=2.70e-03 t(r=128)=0.067s
