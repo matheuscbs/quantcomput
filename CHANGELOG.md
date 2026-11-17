@@ -8,6 +8,7 @@ Histórico de versões do conhecimento e do código. Convenção em [ARQUITETURA
 
 - `docs/09-hipotese-final.md`: hipótese que junta os resultados do E11 ao E16 ao custo de gravar os pesos. A ineficiência de caminho $\rho$ é prevista pela SNR por coordenada, e um cache sináptico (Li e van Rossum, 2020) a recupera.
 - E17 (cache sináptico), com critérios de H17, H18 e H19 commitados antes da execução; calibração de lr e modelos de brinquedo em `auxiliares/`.
+- Resultado do E17: H17, H18 e H19 aprovadas. $\rho$ de 21 a 49 sem cache (backprop perto de 5), previsto com erro abaixo de 5%; regime de ruído, $\rho \approx \sqrt T$; $G(16)$ de 9,4 a 17,6.
 - Roteiro renumerado: E18 consolidação por reforço, E19 bancada de energia; tarefas maiores, ruído de avaliação e limite inferior passam a E20, E21 e E22.
 
 ## [0.3.0] - 2026-11-16

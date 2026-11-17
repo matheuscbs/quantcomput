@@ -61,13 +61,13 @@ com o piso $M_{\min} \ge$ o deslocamento necessário para guardar os bits úteis
 
 ## 5. Então, quantos bits custa aprender
 
-A resposta tem duas contas. Os bits que entram são fixados pela tarefa: cerca de 38 mil entregues e cerca de 3 mil úteis em Fashion-MNIST com 10 classes (medido). Os bits que se gravam são esses multiplicados por $\rho$. A previsão é que, no protocolo do E13, $\rho$ fique em algumas dezenas, porque a calibração do E17 deu de 34,6 a 36,5 (medido, fora das sementes do teste). Sem cache, o sistema grava dezenas de vezes o que guarda. Com cache, a gravação pode chegar perto do mínimo.
+A resposta tem duas contas. Os bits que entram são fixados pela tarefa: cerca de 38 mil entregues e cerca de 3 mil úteis em Fashion-MNIST com 10 classes (medido). Os bits que se gravam são esses multiplicados por $\rho$. No E17 (medido), $\rho$ ficou entre 21 e 49 no treino projetado e perto de 5 no backprop, e a fórmula da seção 3 previu cada célula com erro abaixo de 5%. Sem cache, o sistema grava dezenas de vezes o que guarda. Um cache com limiar de 16 passos típicos reduz a gravação de 9 a 18 vezes, e com limiar maior chega ao mínimo.
 
 ## 6. Testes
 
 | Teste | O que testa | Estado |
 |---|---|---|
-| E17, cache sináptico | H17: $\rho \ge 10$ sem cache; H18: $\rho$ segue $\rho_{\text{prev}}$; H19: $G(16) \ge 5$ | pré-registrado; ver [README](../experimentos/E17-cache-sinaptico/README.md) |
+| E17, cache sináptico | H17: $\rho \ge 10$ sem cache; H18: $\rho$ segue $\rho_{\text{prev}}$; H19: $G(16) \ge 5$ | H17, H18 e H19 aprovadas; ver [README](../experimentos/E17-cache-sinaptico/README.md) |
 | E18, consolidação por reforço | um cache que só consolida o que se repete (marcação e captura sináptica), em vez de decair. O decaimento simples impediu o treino de chegar ao alvo no modelo de brinquedo. | a desenhar |
 | E19, bancada de energia | P2 a P4 da proposta teórica: precisão ótima de leitura, curva do conversor e escrita em memória não volátil medidas em joules | depende de hardware |
 

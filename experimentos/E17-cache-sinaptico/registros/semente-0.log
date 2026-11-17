@@ -1,0 +1,8 @@
+{'sem': 0, 'arq': 'prof', 'r': 16, 'N': 118282, 'passos': 1900, 'atingiu': True, 'acc_final': 0.724, 'M': 68801.883, 'Mmin': 1688.48, 'rho': 40.748, 'sigma': 0.0} 32 s
+{'sem': 0, 'arq': 'prof', 'r': 32, 'N': 118282, 'passos': 1020, 'atingiu': True, 'acc_final': 0.725, 'M': 53323.739, 'Mmin': 1770.845, 'rho': 30.112, 'sigma': 0.0} 72 s
+{'sem': 0, 'arq': 'prof', 'r': 64, 'N': 118282, 'passos': 510, 'atingiu': True, 'acc_final': 0.726, 'M': 37672.928, 'Mmin': 1761.122, 'rho': 21.391, 'sigma': 0.001} 114 s
+{'sem': 0, 'arq': 'prof', 'r': 0, 'N': 118282, 'passos': 60, 'atingiu': True, 'acc_final': 0.755, 'M': 5097.962, 'Mmin': 801.369, 'rho': 6.362, 'sigma': 0.001} 114 s
+{'sem': 0, 'arq': 'larga', 'r': 16, 'N': 407050, 'passos': 2680, 'atingiu': True, 'acc_final': 0.723, 'M': 138311.143, 'Mmin': 2841.375, 'rho': 48.678, 'sigma': 0.0} 304 s
+{'sem': 0, 'arq': 'larga', 'r': 32, 'N': 407050, 'passos': 1250, 'atingiu': True, 'acc_final': 0.724, 'M': 93153.803, 'Mmin': 2769.908, 'rho': 33.631, 'sigma': 0.0} 497 s
+{'sem': 0, 'arq': 'larga', 'r': 64, 'N': 407050, 'passos': 670, 'atingiu': True, 'acc_final': 0.726, 'M': 69808.485, 'Mmin': 2821.937, 'rho': 24.738, 'sigma': 0.001} 729 s
+{'sem': 0, 'arq': 'larga', 'r': 0, 'N': 407050, 'passos': 30, 'atingiu': True, 'acc_final': 0.762, 'M': 5437.503, 'Mmin': 1123.551, 'rho': 4.84, 'sigma': 0.001} 729 s

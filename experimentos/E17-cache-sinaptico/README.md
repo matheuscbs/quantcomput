@@ -48,4 +48,25 @@ make e17
 
 ## Resultado
 
-A preencher depois da execução oficial.
+**H17, H18 e H19 aprovadas.** As 18 execuções projetadas e as 6 de backprop chegaram ao alvo, sem nenhuma censurada.
+
+| Célula | passos | $\rho$ medido | $\rho_{\text{prev}}$ | $G(1)$ | $G(4)$ | $G(16)$ | $G(64)$ | $G(256)$ | $M_{\min}$ |
+|---|---|---|---|---|---|---|---|---|---|
+| prof, r = 16 | 1.997 | 41,8 | 42,0 | 1,3 | 2,9 | 9,7 | 30,8 | 41,8 | 1.737 |
+| prof, r = 32 | 1.060 | 30,7 | 30,4 | 1,3 | 2,9 | 9,6 | 26,7 | 30,7 | 1.810 |
+| prof, r = 64 | 513 | 21,5 | 21,0 | 1,3 | 2,9 | 9,4 | 20,8 | 21,5 | 1.767 |
+| larga, r = 16 | 2.753 | 49,3 | 51,5 | 1,7 | 4,8 | 17,1 | 45,4 | 49,3 | 2.872 |
+| larga, r = 32 | 1.263 | 33,8 | 34,8 | 1,8 | 5,2 | 17,6 | 33,6 | 33,8 | 2.784 |
+| larga, r = 64 | 693 | 25,1 | 25,7 | 1,8 | 5,2 | 16,6 | 25,1 | 25,1 | 2.873 |
+
+Médias de 3 sementes.
+
+- **H17:** $\rho \ge 10$ nas 18 execuções. A mediana projetada foi 30,1 contra 5,8 do backprop na rede prof (5,2 vezes) e 33,6 contra 4,8 na larga (6,9 vezes). O backprop chegou ao alvo em 30 a 60 passos.
+- **H18:** a mediana de $\rho/\rho_{\text{prev}}$ foi 0,98, e a correlação de Spearman, 1,0. No MQO exploratório, $\log\rho$ = 0,49 $\log T$ + 0,008 $\log N$ − 0,002 $\log r$ ($R^2$ = 0,9999). O treino está no regime em que o ruído domina: $\rho \approx \sqrt T$, e N e r só entram pelo número de passos.
+- **H19:** $G(\kappa)$ cresce com κ nas 6 células, e $G(16)$ vai de 9,4 a 17,6. Com κ = 256 o ganho chega a $\rho$, ou seja, o cache recupera todo o desperdício.
+- **Exploratório, energia com preço de manutenção.** Nas duas células prof com r = 16 e r = 32, o mínimo ficou em κ = 16 com $c$ = 0,01 (custo de 4,1 a 5,1 vezes menor que sem cache), em κ = 64 a 256 com $c$ = 0,001 e no maior κ da grade com $c$ = 0,0001. Quando manter custa mais, o ótimo vai para κ menor, como previsto. A lei $\sqrt c$ não foi ajustada.
+- **Exploratório, $M_{\min}$.** Cresceu 1,6 vezes da rede prof para a larga, com N 3,4 vezes maior.
+
+**O que isso significa.** Sem cache, o treino por medidas ruidosas grava de 21 a 49 vezes o deslocamento que guarda, e o backprop, cerca de 5 vezes. A fórmula do passeio aleatório previu cada célula com erro abaixo de 5%. Como $\rho \approx \sqrt T$ e T não cresce com N (E13), o desperdício também não cresce com N nesse regime. Um cache com limiar de 16 passos típicos reduz a gravação de 9 a 18 vezes.
+
+Limites: o cache não muda a trajetória, então o resultado mede a escrita e não a acurácia. O custo $\sum\lvert\Delta w\rvert$ é o de Li e van Rossum, e um dispositivo real pode cobrar por evento de escrita. O regime de deriva dominante ($\rho \propto \sqrt{N/r}$) não foi alcançado aqui.
