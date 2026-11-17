@@ -74,7 +74,7 @@ O que sai das tabelas:
 - **B4:** o canal float reproduziu o E11 com diferença 0,0 nas 6 células (até a quarta casa decimal).
 - **Inconclusivo:** não. A maior divergência entre sementes ficou em r = 8 com N = 13.002 (até 5,9 pontos), abaixo do limite de 1/4 das células.
 
-**O que isso significa para a hipótese.** A forma $T \ge I/(B\log_2(1+\mathrm{SNR}))$ trata bits de medidas diferentes e bits de precisão como intercambiáveis. Nesse regime eles não são: um bit a mais de precisão vale quase nada, e uma medida a mais vale muito. A capacidade nominal do canal superestima a informação útil quando o SNR é alto. Uma explicação possível, ainda não testada, é que o ruído do minilote já domina o erro de cada projeção, de modo que ruído de canal abaixo dele é invisível. Fica registrada como H14 em [hipóteses](../../docs/hipoteses.md).
+**O que isso significa para a hipótese.** A forma $`T \ge I/(B\log_2(1+\mathrm{SNR}))`$ trata bits de medidas diferentes e bits de precisão como intercambiáveis. Nesse regime eles não são: um bit a mais de precisão vale quase nada, e uma medida a mais vale muito. A capacidade nominal do canal superestima a informação útil quando o SNR é alto. Uma explicação possível, ainda não testada, é que o ruído do minilote já domina o erro de cada projeção, de modo que ruído de canal abaixo dele é invisível. Fica registrada como H14 em [hipóteses](../../docs/hipoteses.md).
 
 Limite que continua: as projeções saem do gradiente exato; o E12 muda o canal, não a forma de medir. A informação mútua efetiva entre medidas e gradiente segue sem medida.
 

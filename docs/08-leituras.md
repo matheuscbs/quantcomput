@@ -22,15 +22,15 @@ flowchart TD
 
 ## 1. Dimensão intrínseca (Li et al., 2018)
 
-**Mostra.** Treinar no subespaço afim $\theta = \theta_0 + P\theta^{(d)}$, com $P$ aleatória fixa ($D \times d$, colunas gaussianas normalizadas), define $d_{\text{int}90}$: a menor dimensão que atinge 90% do desempenho do treino completo. Numa varredura de 20 redes totalmente conectadas no MNIST, D variou 24,1 vezes e $d_{\text{int}90}$ só 1,33 vezes, "com boa parte disso possivelmente ruído". Valores medidos: FC no MNIST, 750; LeNet no MNIST, 290; FC no CIFAR-10, 9.000; LeNet no CIFAR-10, 2.900. Memorizar rótulos embaralhados do MNIST exigiu 190.000 (3,8 floats por rótulo). Codificando a semente e os 750 floats, a compressão chega a 260 vezes.
+**Mostra.** Treinar no subespaço afim $`\theta = \theta_0 + P\theta^{(d)}`$, com $`P`$ aleatória fixa ($`D \times d`$, colunas gaussianas normalizadas), define $`d_{\text{int}90}`$: a menor dimensão que atinge 90% do desempenho do treino completo. Numa varredura de 20 redes totalmente conectadas no MNIST, D variou 24,1 vezes e $`d_{\text{int}90}`$ só 1,33 vezes, "com boa parte disso possivelmente ruído". Valores medidos: FC no MNIST, 750; LeNet no MNIST, 290; FC no CIFAR-10, 9.000; LeNet no CIFAR-10, 2.900. Memorizar rótulos embaralhados do MNIST exigiu 190.000 (3,8 floats por rótulo). Codificando a semente e os 750 floats, a compressão chega a 260 vezes.
 
-**Não mostra.** O valor é um limite superior que depende do otimizador e da restrição a subespaços lineares. O artigo não codifica os resíduos nos dados, então a conta em bits ($32 \times d$) é só a parte do modelo.
+**Não mostra.** O valor é um limite superior que depende do otimizador e da restrição a subespaços lineares. O artigo não codifica os resíduos nos dados, então a conta em bits ($`32 \times d`$) é só a parte do modelo.
 
-**Para este projeto.** O E11 difere em um ponto: as direções mudam a cada passo, e o otimizador recebe $r$ números por passo, não $d$ parâmetros fixos. Mesmo assim, o platô em N que o E11 sugere já tem precedente forte em Li et al., e o ensaio precisa citá-lo como o resultado vizinho mais próximo. Comparação direta possível: medir $d_{\text{int}90}$ das mesmas redes do E11 em Fashion-MNIST e comparar com o total de projeções.
+**Para este projeto.** O E11 difere em um ponto: as direções mudam a cada passo, e o otimizador recebe $`r`$ números por passo, não $`d`$ parâmetros fixos. Mesmo assim, o platô em N que o E11 sugere já tem precedente forte em Li et al., e o ensaio precisa citá-lo como o resultado vizinho mais próximo. Comparação direta possível: medir $`d_{\text{int}90}`$ das mesmas redes do E11 em Fashion-MNIST e comparar com o total de projeções.
 
 ## 2. Gradiente multiplexado e escala (McCaughan et al., 2023; Oripov et al., 2025)
 
-**Mostram.** O MGD estima o gradiente por detecção homódina: cada parâmetro recebe uma perturbação ortogonal (tons senoidais, códigos determinísticos tipo Walsh, códigos aleatórios ou perturbação sequencial), e a correlação com o custo modulado, integrada por $\tau_\theta$, dá a derivada. Três escalas de tempo ($\tau_p$, $\tau_\theta$, $\tau_x$) recuperam diferenças finitas, descida por coordenadas e SPSA como casos particulares. Os quatro tipos de perturbação tiveram tempo de treino equivalente na paridade de 2 bits (rede 2-2-1, 100 inicializações). Em Fashion-MNIST, uma CNN de 14.378 parâmetros chegou a 83,5% contra 88,6% do backprop.
+**Mostram.** O MGD estima o gradiente por detecção homódina: cada parâmetro recebe uma perturbação ortogonal (tons senoidais, códigos determinísticos tipo Walsh, códigos aleatórios ou perturbação sequencial), e a correlação com o custo modulado, integrada por $`\tau_\theta`$, dá a derivada. Três escalas de tempo ($`\tau_p`$, $`\tau_\theta`$, $`\tau_x`$) recuperam diferenças finitas, descida por coordenadas e SPSA como casos particulares. Os quatro tipos de perturbação tiveram tempo de treino equivalente na paridade de 2 bits (rede 2-2-1, 100 inicializações). Em Fashion-MNIST, uma CNN de 14.378 parâmetros chegou a 83,5% contra 88,6% do backprop.
 
 Oripov et al. separam duas escalas. O tempo para estimar bem o gradiente cresce com N (perturbação de pesos) ou com √N (perturbação de nós em camadas densas). O tempo até 80% de acurácia em Fashion-MNIST "varia menos de uma ordem de grandeza ao longo de mais de três ordens de grandeza no tamanho da rede". A complexidade da tarefa (número de classes) muda o tempo de treino; a velocidade de estimar o gradiente não depende dela.
 
@@ -45,24 +45,24 @@ Oripov et al. separam duas escalas. O tempo para estimar bem o gradiente cresce 
 **Para este projeto.** Isso explica dois resultados do E11:
 
 - o modo oráculo, com metade das direções vindas dos gradientes verdadeiros anteriores, chega perto do backprop já com r = 8, porque essas direções cobrem o subespaço de topo de dimensão aproximada 10;
-- o modo adaptativo falha porque o histórico guarda estimativas $VV^\top g$, dominadas por componentes aleatórias, e não aprende o subespaço de topo.
+- o modo adaptativo falha porque o histórico guarda estimativas $`VV^\top g`$, dominadas por componentes aleatórias, e não aprende o subespaço de topo.
 
 Duas consequências testáveis:
 
-1. $I$ deve crescer com o número de classes k da tarefa (Fashion-MNIST com 2, 5 e 10 classes), e não com N;
+1. $`I`$ deve crescer com o número de classes k da tarefa (Fashion-MNIST com 2, 5 e 10 classes), e não com N;
 2. um modo adaptativo que estime o subespaço de topo de forma consistente (média das estimativas ao longo de vários passos, ou iteração de potência sobre as medidas) deveria se aproximar do oráculo.
 
 ## 4. Ordem zero e projeções aleatórias (Duchi et al., 2015; Baydin et al., 2022; Malladi et al., 2023)
 
-**Mostram.** Com duas avaliações da função por passo, qualquer algoritmo de ordem zero sofre uma penalidade de pelo menos $\sqrt{d}$ na taxa de convergência convexa, e os algoritmos ótimos a atingem. O forward gradient $(\nabla f \cdot v)\,v$ não tem viés, mas, para $v$ gaussiano, o segundo momento é $(d+2)\lVert\nabla f\rVert^2$. O MeZO funciona no ajuste fino de modelos de linguagem grandes e atribui isso ao posto efetivo local pequeno da Hessiana: a taxa depende desse posto, não do número de parâmetros.
+**Mostram.** Com duas avaliações da função por passo, qualquer algoritmo de ordem zero sofre uma penalidade de pelo menos $`\sqrt{d}`$ na taxa de convergência convexa, e os algoritmos ótimos a atingem. O forward gradient $`(\nabla f \cdot v)\,v`$ não tem viés, mas, para $`v`$ gaussiano, o segundo momento é $`(d+2)\lVert\nabla f\rVert^2`$. O MeZO funciona no ajuste fino de modelos de linguagem grandes e atribui isso ao posto efetivo local pequeno da Hessiana: a taxa depende desse posto, não do número de parâmetros.
 
 **Para este projeto.** A penalidade em d vale para direções isotrópicas, sem estrutura. A saída para não pagar N, como sugerem MeZO e Gur-Ari, é a geometria da perda ter posto efetivo baixo. O E11 com direções aleatórias paga parte dessa penalidade; a pergunta interessante é quanto da informação necessária está no subespaço de posto baixo.
 
 ## 5. Bits por gradiente (Alistarh et al., 2017, QSGD)
 
-**Mostra.** A quantização estocástica em s níveis não tem viés, e a variância extra é limitada por $\min(n/s^2, \sqrt{n}/s)\,\lVert v\rVert^2$. Com codificação de Elias, cerca de $2{,}8n + 32$ bits por iteração bastam para no máximo dobrar a variância. Melhorar esse compromisso assintoticamente violaria o limite inferior de comunicação para estimação distribuída da média (citado de Zhang, Duchi, Jordan e Wainwright, 2013, e de Suresh et al., 2016).
+**Mostra.** A quantização estocástica em s níveis não tem viés, e a variância extra é limitada por $`\min(n/s^2, \sqrt{n}/s)\,\lVert v\rVert^2`$. Com codificação de Elias, cerca de $`2{,}8n + 32`$ bits por iteração bastam para no máximo dobrar a variância. Melhorar esse compromisso assintoticamente violaria o limite inferior de comunicação para estimação distribuída da média (citado de Zhang, Duchi, Jordan e Wainwright, 2013, e de Suresh et al., 2016).
 
-**Para este projeto.** Aplicado a r projeções com b bits ($s \approx 2^b$), a variância extra deixa de depender de r quando $b \ge \tfrac{1}{2}\log_2 r$. Isso dá uma previsão para o E12: com r = 128, a degradação deve cair rápido até b ≈ 3,5 bits e pouco depois disso. O QSGD supõe canal digital sem ruído físico; o canal ruidoso do E12 não tem esse amparo.
+**Para este projeto.** Aplicado a r projeções com b bits ($`s \approx 2^b`$), a variância extra deixa de depender de r quando $`b \ge \tfrac{1}{2}\log_2 r`$. Isso dá uma previsão para o E12: com r = 128, a degradação deve cair rápido até b ≈ 3,5 bits e pouco depois disso. O QSGD supõe canal digital sem ruído físico; o canal ruidoso do E12 não tem esse amparo.
 
 > **Resultado do E12 (2026-11-10).** Com quantização, b = 2 perdeu de 0,5 a 1,1 ponto e b = 4 empatou com float32 em todos os r. A perda não cresceu de forma clara com r, então a previsão não foi confirmada nem refutada nessa grade. No canal ruidoso, 1 bit por projeção já bastou (perda máxima de 1 ponto). Ver [resultados](02-resultados.md#e12-canal-quantizado-e-ruidoso).
 
@@ -82,39 +82,39 @@ Duas consequências testáveis:
 
 Leitura de 2026-11-16, no texto completo.
 
-**Mostram.** A escala de ruído do gradiente $B_{\text{simple}} = \mathrm{tr}(\Sigma)/|G|^2$ dá o erro relativo esperado de uma estimativa com lote B: $\mathbb{E}|G_{\text{est}} - G|^2/|G|^2 = B_{\text{simple}}/B$ (Eq. 2.10). $B_{\text{simple}}$ e $B_{\text{noise}}$ "typically differ only by a small constant multiplicative factor", o tamanho crítico de lote fica em $B_{\text{crit}} \approx B_{\text{noise}}$, e "the noise scale increases as the loss decreases". Smith et al. usam a escala de ruído $g \approx \epsilon N/B$ e mostram que aumentar o lote equivale a reduzir a taxa.
+**Mostram.** A escala de ruído do gradiente $`B_{\text{simple}} = \mathrm{tr}(\Sigma)/|G|^2`$ dá o erro relativo esperado de uma estimativa com lote B: $`\mathbb{E}|G_{\text{est}} - G|^2/|G|^2 = B_{\text{simple}}/B`$ (Eq. 2.10). $`B_{\text{simple}}`$ e $`B_{\text{noise}}`$ "typically differ only by a small constant multiplicative factor", o tamanho crítico de lote fica em $`B_{\text{crit}} \approx B_{\text{noise}}`$, e "the noise scale increases as the loss decreases". Smith et al. usam a escala de ruído $`g \approx \epsilon N/B`$ e mostram que aumentar o lote equivale a reduzir a taxa.
 
-**Para este projeto.** Numa direção aleatória de norma unitária, a mesma conta dá $\mathrm{SNR}_B = B/B_{\text{simple}}$. Os valores do E15 e do E16 correspondem a $B_{\text{simple}}$ de cerca de 565 a 5.079, crescente com o lote porque os lotes maiores chegam a perdas menores. Isso explica a H14b reprovada no E15 e o E16 inconclusivo.
+**Para este projeto.** Numa direção aleatória de norma unitária, a mesma conta dá $`\mathrm{SNR}_B = B/B_{\text{simple}}`$. Os valores do E15 e do E16 correspondem a $`B_{\text{simple}}`$ de cerca de 565 a 5.079, crescente com o lote porque os lotes maiores chegam a perdas menores. Isso explica a H14b reprovada no E15 e o E16 inconclusivo.
 
 ## 9. Limites inferiores de ordem zero (Agarwal et al., 2012; Shamir, 2013)
 
-**Mostram.** Agarwal et al. reduzem a otimização a identificar um vértice de hipercubo e aplicam a desigualdade de Fano, com a informação mútua entre as respostas do oráculo e o parâmetro escondido. Shamir mostra que, com uma avaliação ruidosa por consulta, em funções fortemente convexas e suaves, o erro atingível é "exactly $\Theta(\sqrt{d^2/T})$".
+**Mostram.** Agarwal et al. reduzem a otimização a identificar um vértice de hipercubo e aplicam a desigualdade de Fano, com a informação mútua entre as respostas do oráculo e o parâmetro escondido. Shamir mostra que, com uma avaliação ruidosa por consulta, em funções fortemente convexas e suaves, o erro atingível é "exactly $`\Theta(\sqrt{d^2/T})`$".
 
-**Para este projeto.** É a moldura natural para um limite inferior de $I$. Os limites valem no pior caso convexo e pagam a dimensão; MeZO (seção 4) explica por que redes reais podem não pagar.
+**Para este projeto.** É a moldura natural para um limite inferior de $`I`$. Os limites valem no pior caso convexo e pagam a dimensão; MeZO (seção 4) explica por que redes reais podem não pagar.
 
 ## 10. Energia de conversão (Jonsson, 2013; survey de Murmann)
 
 **Mostram.** Sobre os conversores publicados desde 1974, "the power dissipation will quadruple for every effective bit of resolution if the ADC power is limited by thermal noise constraints (e.g., kT/C capacitor sizing)". A reta térmica passa por 1 pJ por amostra em ENOB = 9 e acompanha a fronteira para ENOB ≥ 9. Abaixo disso, "energy-per-sample levels out to an almost constant value for low resolutions", praticamente independente de ENOB de 8 bits para baixo.
 
-**Para este projeto.** Por essa reta, uma leitura de 16 bits custa cerca de $4^7 \approx 1{,}6\times10^4$ vezes uma de 9 bits, e uma de 2 bits fica no platô. A troca da leitura absoluta (16 bits) pela diferencial (2 bits) no E14 vale cerca de quatro ordens de grandeza por leitura. A estimativa cobre só o conversor.
+**Para este projeto.** Por essa reta, uma leitura de 16 bits custa cerca de $`4^7 \approx 1{,}6\times10^4`$ vezes uma de 9 bits, e uma de 2 bits fica no platô. A troca da leitura absoluta (16 bits) pela diferencial (2 bits) no E14 vale cerca de quatro ordens de grandeza por leitura. A estimativa cobre só o conversor.
 
 ## 11. Treino físico sem modelo (Momeni et al., 2023)
 
 **Mostram.** O *model-free forward-forward training* treina redes físicas profundas "without requiring detailed knowledge of the nonlinear physical layers and train a digital twin model".
 
-**Para este projeto.** É o protocolo publicado mais próximo de um treino físico real ao qual a definição de $I$ se aplicaria. O relatório gerado pelo NotebookLM o descreveu como propagação de equilíbrio; a leitura do texto corrigiu isso.
+**Para este projeto.** É o protocolo publicado mais próximo de um treino físico real ao qual a definição de $`I`$ se aplicaria. O relatório gerado pelo NotebookLM o descreveu como propagação de equilíbrio; a leitura do texto corrigiu isso.
 
 ## O que muda na pesquisa
 
 | Antes da leitura | Depois |
 |---|---|
 | "Até onde pesquisei, essa conta ainda não foi feita" | O fenômeno (custo quase independente de N) já foi observado em tempo (Oripov) e em dimensão (Li). O que falta é medir em bits e ligar ao SNR e à energia |
-| $I$ sem conceito vizinho | $d_{\text{int}90}$ é o vizinho direto; o subespaço de topo (k direções) sugere que $I$ escala com a estrutura da tarefa |
+| $`I`$ sem conceito vizinho | $`d_{\text{int}90}`$ é o vizinho direto; o subespaço de topo (k direções) sugere que $`I`$ escala com a estrutura da tarefa |
 | Modo adaptativo descartado | O fracasso tem explicação: estimar o subespaço de topo a partir de medidas ruidosas exige acumular informação ao longo de vários passos |
-| E12 sem previsão quantitativa | QSGD prevê que a perda por quantização some a partir de $b \approx \tfrac{1}{2}\log_2 r$ (no E12, a perda sumiu entre 2 e 4 bits, sem dependência clara de r) |
+| E12 sem previsão quantitativa | QSGD prevê que a perda por quantização some a partir de $`b \approx \tfrac{1}{2}\log_2 r`$ (no E12, a perda sumiu entre 2 e 4 bits, sem dependência clara de r) |
 
 Novos experimentos sugeridos, em ordem de custo:
 
 1. **E13a**: Fashion-MNIST com 2, 5 e 10 classes, mesmo r e N, para ver se o total de bits necessário acompanha k.
 2. **E13b**: modo adaptativo com estimativa acumulada do subespaço de topo, comparado ao oráculo.
-3. **E13c**: $d_{\text{int}90}$ das redes do E11, para comparar subespaço fixo com projeções renovadas a cada passo.
+3. **E13c**: $`d_{\text{int}90}`$ das redes do E11, para comparar subespaço fixo com projeções renovadas a cada passo.

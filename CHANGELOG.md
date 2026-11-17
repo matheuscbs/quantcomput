@@ -6,9 +6,9 @@ Histórico de versões do conhecimento e do código. Convenção em [ARQUITETURA
 
 ### Adicionado
 
-- `docs/09-hipotese-final.md`: hipótese que junta os resultados do E11 ao E16 ao custo de gravar os pesos. A ineficiência de caminho $\rho$ é prevista pela SNR por coordenada, e um cache sináptico (Li e van Rossum, 2020) a recupera.
+- `docs/09-hipotese-final.md`: hipótese que junta os resultados do E11 ao E16 ao custo de gravar os pesos. A ineficiência de caminho $`\rho`$ é prevista pela SNR por coordenada, e um cache sináptico (Li e van Rossum, 2020) a recupera.
 - E17 (cache sináptico), com critérios de H17, H18 e H19 commitados antes da execução; calibração de lr e modelos de brinquedo em `auxiliares/`.
-- Resultado do E17: H17, H18 e H19 aprovadas. $\rho$ de 21 a 49 sem cache (backprop perto de 5), previsto com erro abaixo de 5%; regime de ruído, $\rho \approx \sqrt T$; $G(16)$ de 9,4 a 17,6.
+- Resultado do E17: H17, H18 e H19 aprovadas. $`\rho`$ de 21 a 49 sem cache (backprop perto de 5), previsto com erro abaixo de 5%; regime de ruído, $`\rho \approx \sqrt T`$; $`G(16)`$ de 9,4 a 17,6.
 - Artigo: seção de custo de gravação (formulação, método, resultado do E17, discussão e limites), tabela gerada a partir do JSON oficial e duas referências novas (Li e van Rossum, 2020; Girard, Jiang e van Rossum, 2023).
 - E17, análises posteriores ao resultado: eventos de escrita por peso e expoente do κ ótimo contra o preço de manutenção.
 - Roteiro renumerado: E18 consolidação por reforço, E19 bancada de energia; tarefas maiores, ruído de avaliação e limite inferior passam a E20, E21 e E22.
@@ -32,15 +32,15 @@ Histórico de versões do conhecimento e do código. Convenção em [ARQUITETURA
 
 ### Mudado
 
-- H08 revisada: o denominador passa a ser a informação efetiva por medida, $\tfrac12\log_2(1+\mathrm{SNR}_{\text{ef}})$, com $\mathrm{SNR}_B = B/B_{\text{simple}}$ para o minilote.
+- H08 revisada: o denominador passa a ser a informação efetiva por medida, $`\tfrac12\log_2(1+\mathrm{SNR}_{\text{ef}})`$, com $`\mathrm{SNR}_B = B/B_{\text{simple}}`$ para o minilote.
 - H11 e H12 aprovadas no E13; H14 parcial (E15) e sem veredito novo no E16 (inconclusivo).
 
 ### Resultados
 
-- E13: tarefa 88,5% da soma dos quadrados de $\log_2 I$, interações 6,7%; $I$ cresce com k nas 8 combinações; rede 3,4 vezes maior usa 0,90 vez os bits.
+- E13: tarefa 88,5% da soma dos quadrados de $`\log_2 I`$, interações 6,7%; $`I`$ cresce com k nas 8 combinações; rede 3,4 vezes maior usa 0,90 vez os bits.
 - E14: P0 a P4 aprovados em 6 de 6 células; diferença central a no máximo 0,13 ponto da projeção exata; leitura absoluta exige 16 bits, diferencial 2.
-- E15: $\mathrm{SNR}_B$ de 0,23 a 0,75; H10′ com $R^2 = 0{,}89$ (bits nominais: 0,02); H14b reprovado.
-- E16: inconclusivo (mediana de $\mathrm{SNR}_B$ de 4,3 e 8,6, abaixo de 10); $B_{\text{simple}}$ cresceu de cerca de 565 para 5.079.
+- E15: $`\mathrm{SNR}_B`$ de 0,23 a 0,75; H10′ com $`R^2 = 0{,}89`$ (bits nominais: 0,02); H14b reprovado.
+- E16: inconclusivo (mediana de $`\mathrm{SNR}_B`$ de 4,3 e 8,6, abaixo de 10); $`B_{\text{simple}}`$ cresceu de cerca de 565 para 5.079.
 
 ### Observações
 
@@ -58,7 +58,7 @@ Histórico de versões do conhecimento e do código. Convenção em [ARQUITETURA
 
 ### Mudado
 
-- H10 refutada; H08 mantida aberta, com a forma $\log_2(1+\mathrm{SNR})$ a revisar no regime de alto SNR.
+- H10 refutada; H08 mantida aberta, com a forma $`\log_2(1+\mathrm{SNR})`$ a revisar no regime de alto SNR.
 - A contribuição foi redefinida depois da leitura: Oripov et al. (2025) e Li et al. (2018) já observaram o custo quase independente de N; o que o projeto propõe é medi-lo em bits e ligá-lo a k, SNR e energia.
 
 ### Observações

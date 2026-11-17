@@ -12,24 +12,24 @@ Ele começou com um ensaio para a seleção do Doutorado Profissional em Engenha
 |---|---|---|
 | O número de medidas necessário cresce com o número de parâmetros N? | Não nas redes testadas. Com r projeções fixas, a rede de 118 mil parâmetros não ficou abaixo da de 13 mil | [E11](experimentos/E11-canais-de-gradiente) |
 | O total de bits governa a acurácia? | Não. Mais medidas de baixa precisão ganham de poucas medidas precisas com o mesmo orçamento | [E12](experimentos/E12-canal-quantizado-e-ruidoso) |
-| O custo $I$, em bits até um alvo de acurácia, é da tarefa ou da rede? | Da tarefa, que explicou 88,5% da variação de $\log_2 I$ num desenho fatorial. $I$ cresce com o número de classes e não com N | [E13](experimentos/E13-fatorial-de-I) |
+| O custo $`I`$, em bits até um alvo de acurácia, é da tarefa ou da rede? | Da tarefa, que explicou 88,5% da variação de $`\log_2 I`$ num desenho fatorial. $`I`$ cresce com o número de classes e não com N | [E13](experimentos/E13-fatorial-de-I) |
 | O resultado se mantém sem backpropagation? | Sim, com o gradiente medido por diferença central da perda. O custo passa a ser a leitura: 16 bits por leitura absoluta, 2 por leitura diferencial | [E14](experimentos/E14-perturbacao-real) |
-| O que limita a informação útil de cada medida? | O ruído do minilote, maior que o sinal em cada projeção. A informação efetiva explica a acurácia com $R^2$ = 0,89, e os bits nominais do canal, com 0,02 | [E15](experimentos/E15-ruido-do-minilote), [E16](experimentos/E16-lote-grande) |
+| O que limita a informação útil de cada medida? | O ruído do minilote, maior que o sinal em cada projeção. A informação efetiva explica a acurácia com $`R^2`$ = 0,89, e os bits nominais do canal, com 0,02 | [E15](experimentos/E15-ruido-do-minilote), [E16](experimentos/E16-lote-grande) |
 | Quanto custa gravar o que se aprende? | Sem memória transitória, o treino por projeções ruidosas percorreu de 21 a 49 vezes o deslocamento que guardou; o backprop, cerca de 5. Um cache que consolida só acima de um limiar reduziu a escrita de 9 a 18 vezes | [E17](experimentos/E17-cache-sinaptico) |
 
 O texto completo está no [artigo](artigo/main.pdf), e a síntese de todos os resultados numa só hipótese está em [docs/09](docs/09-hipotese-final.md).
 
 ## A hipótese
 
-Hardware sem caminho de volta exato mede o gradiente por perturbação. No gradiente multiplexado (McCaughan et al., NIST), cada parâmetro oscila na própria frequência e um processo do tipo lock-in separa a contribuição de cada um. Numa janela de duração $T$, dois tons só se distinguem se estiverem a cerca de $1/T$ um do outro. Por isso, medir $N$ parâmetros numa banda $B$ exige $T \ge N/B$. A hipótese troca $N$ pela informação que a tarefa exige:
+Hardware sem caminho de volta exato mede o gradiente por perturbação. No gradiente multiplexado (McCaughan et al., NIST), cada parâmetro oscila na própria frequência e um processo do tipo lock-in separa a contribuição de cada um. Numa janela de duração $`T`$, dois tons só se distinguem se estiverem a cerca de $`1/T`$ um do outro. Por isso, medir $`N`$ parâmetros numa banda $`B`$ exige $`T \ge N/B`$. A hipótese troca $`N`$ pela informação que a tarefa exige:
 
-$$
+```math
 T \;\ge\; \frac{I}{B \, b_{\text{ef}}}, \qquad b_{\text{ef}} = \tfrac12\log_2(1+\mathrm{SNR}_{\text{ef}})
-$$
+```
 
-$I$ é o menor número de bits de realimentação que leva a uma dada acurácia, e $b_{\text{ef}}$ é a informação útil de cada medida. O $\mathrm{SNR}_{\text{ef}}$ soma o ruído do canal ao do minilote, $\mathrm{SNR}_B = B/B_{\text{simple}}$, que é a escala de ruído de McCandlish et al. (2018).
+$`I`$ é o menor número de bits de realimentação que leva a uma dada acurácia, e $`b_{\text{ef}}`$ é a informação útil de cada medida. O $`\mathrm{SNR}_{\text{ef}}`$ soma o ruído do canal ao do minilote, $`\mathrm{SNR}_B = B/B_{\text{simple}}`$, que é a escala de ruído de McCandlish et al. (2018).
 
-O E17 acrescentou uma segunda parcela. Os bits gravados de forma durável são os bits úteis multiplicados por $\rho = M/M_{\min}$, que mede quanto o sistema escreve e depois desfaz. Pela conta do passeio aleatório, $\rho$ depende da SNR de cada atualização. No regime medido, $\rho \approx \sqrt T$.
+O E17 acrescentou uma segunda parcela. Os bits gravados de forma durável são os bits úteis multiplicados por $`\rho = M/M_{\min}`$, que mede quanto o sistema escreve e depois desfaz. Pela conta do passeio aleatório, $`\rho`$ depende da SNR de cada atualização. No regime medido, $`\rho \approx \sqrt T`$.
 
 ```mermaid
 flowchart LR
@@ -151,10 +151,10 @@ flowchart TD
 | [E10](experimentos/E10-treino-com-orcamento) | Treinar já com orçamento muda a lei? | Inconclusivo |
 | [E11](experimentos/E11-canais-de-gradiente) | Quantos canais de gradiente o treino exige conforme N cresce? | Evidência parcial |
 | [E12](experimentos/E12-canal-quantizado-e-ruidoso) | Com b bits por medida, o total de bits governa a acurácia? | Não: governa r; b satura em 1 a 4 bits |
-| [E13](experimentos/E13-fatorial-de-I) | $I$ é da tarefa ou de arquitetura, inicialização e algoritmo? | Da tarefa (88,5%); cresce com k, não com N |
+| [E13](experimentos/E13-fatorial-de-I) | $`I`$ é da tarefa ou de arquitetura, inicialização e algoritmo? | Da tarefa (88,5%); cresce com k, não com N |
 | [E14](experimentos/E14-perturbacao-real) | O resultado sobrevive sem backpropagation? | Sim; leitura absoluta exige 16 bits, diferencial 2 |
-| [E15](experimentos/E15-ruido-do-minilote) | O minilote limita a informação útil de cada medida? | Sim; $R^2$ 0,89 com SNR efetivo, 0,02 com bits nominais |
-| [E16](experimentos/E16-lote-grande) | Com lote acima de $B_{\text{simple}}$, o canal passa a pesar? | Inconclusivo: nenhum lote alcançou o regime |
+| [E15](experimentos/E15-ruido-do-minilote) | O minilote limita a informação útil de cada medida? | Sim; $`R^2`$ 0,89 com SNR efetivo, 0,02 com bits nominais |
+| [E16](experimentos/E16-lote-grande) | Com lote acima de $`B_{\text{simple}}`$, o canal passa a pesar? | Inconclusivo: nenhum lote alcançou o regime |
 | [E17](experimentos/E17-cache-sinaptico) | Quanto se grava além do necessário, e um cache recupera? | Sim às três hipóteses: ρ de 21 a 49, previsto com erro abaixo de 5%; cache reduz de 9 a 18 vezes |
 
 ## Como reproduzir
@@ -179,7 +179,7 @@ As reexecuções gravam em `saidas/`, e os resultados oficiais em `experimentos/
 
 ## Limites
 
-Todos os testes usam uma família de tarefas (subconjuntos de Fashion-MNIST), perceptrons pequenos, CPU e duas ou três sementes. No E14 a perda é calculada em float32 digital, e o único ruído físico simulado é a quantização do conversor. A estimativa de energia de leitura usa a fronteira publicada de conversores, não um circuito. O $I$ medido é um limite superior para um protocolo fixo. No E17, o custo de gravação é o $\sum\lvert\Delta w\rvert$ de Li e van Rossum (2020), e o cache testado não decai. O que continua sem resposta está em [questões abertas](docs/03-questoes-abertas.md) e no [roteiro](docs/06-roteiro.md).
+Todos os testes usam uma família de tarefas (subconjuntos de Fashion-MNIST), perceptrons pequenos, CPU e duas ou três sementes. No E14 a perda é calculada em float32 digital, e o único ruído físico simulado é a quantização do conversor. A estimativa de energia de leitura usa a fronteira publicada de conversores, não um circuito. O $`I`$ medido é um limite superior para um protocolo fixo. No E17, o custo de gravação é o $`\sum\lvert\Delta w\rvert`$ de Li e van Rossum (2020), e o cache testado não decai. O que continua sem resposta está em [questões abertas](docs/03-questoes-abertas.md) e no [roteiro](docs/06-roteiro.md).
 
 ## Como citar
 

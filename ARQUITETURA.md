@@ -92,7 +92,7 @@ flowchart TD
     P2 --> HS["histórico ← est (adaptativo)<br/>ou g (oráculo)"]
 ```
 
-O canal simulado entrega ao otimizador $r$ números reais por passo, sem ruído e em float32. O custo físico de obter cada número (avaliações da função, tempo de janela, energia) não entra na conta. A [questão 1](docs/03-questoes-abertas.md) discute isso.
+O canal simulado entrega ao otimizador $`r`$ números reais por passo, sem ruído e em float32. O custo físico de obter cada número (avaliações da função, tempo de janela, energia) não entra na conta. A [questão 1](docs/03-questoes-abertas.md) discute isso.
 
 ## Versionamento do conhecimento
 

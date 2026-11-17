@@ -33,17 +33,17 @@ flowchart LR
     LI --- X
 ```
 
-Para uma rede clássica, o algoritmo de Jordan (2005) perde para o backpropagation. O caso genérico exige da ordem de $\sqrt{d}$ consultas para $d$ parâmetros (Gilyén, Arunachalam e Wiebe, 2019), enquanto o backpropagation não depende de $d$. Carregar dados clássicos em superposição também cobra caro (Jaques e Rattew, 2023), e boa parte do ganho prometido nesse modelo tem versão clássica (Chia et al., 2020).
+Para uma rede clássica, o algoritmo de Jordan (2005) perde para o backpropagation. O caso genérico exige da ordem de $`\sqrt{d}`$ consultas para $`d`$ parâmetros (Gilyén, Arunachalam e Wiebe, 2019), enquanto o backpropagation não depende de $`d`$. Carregar dados clássicos em superposição também cobra caro (Jaques e Rattew, 2023), e boa parte do ganho prometido nesse modelo tem versão clássica (Chia et al., 2020).
 
 Conclusão do ensaio: a superposição interessa onde o backpropagation não existe. Lá ela já tem uma versão clássica, o gradiente multiplexado de McCaughan et al. (2023).
 
 ## 3. O limite que vem com o lock-in
 
-Numa janela de duração $T$, dois tons só se distinguem se estiverem separados por cerca de $1/T$ (Gabor, 1946). Com $N$ parâmetros numa banda $B$:
+Numa janela de duração $`T`$, dois tons só se distinguem se estiverem separados por cerca de $`1/T`$ (Gabor, 1946). Com $`N`$ parâmetros numa banda $`B`$:
 
-$$
+```math
 T \ge \frac{N}{B}
-$$
+```
 
 O custo de medir o gradiente inteiro cresce com o tamanho da rede.
 
@@ -51,11 +51,13 @@ O custo de medir o gradiente inteiro cresce com o tamanho da rede.
 
 > O treino físico é limitado pela informação que a tarefa exige, e essa informação não cresce proporcionalmente ao número de parâmetros:
 >
-> $$T \ge \frac{I}{B \cdot \log_2(1+\mathrm{SNR})}$$
+> ```math
+> T \ge \frac{I}{B \cdot \log_2(1+\mathrm{SNR})}
+> ```
 >
-> onde $I$ é o menor número de bits de realimentação que leva a uma dada acurácia.
+> onde $`I`$ é o menor número de bits de realimentação que leva a uma dada acurácia.
 
-A forma é a capacidade de canal de Shannon (1948). O que seria novo é definir $I$, medi-lo em bits e mostrar que ele governa tempo e energia em máquinas reais.
+A forma é a capacidade de canal de Shannon (1948). O que seria novo é definir $`I`$, medi-lo em bits e mostrar que ele governa tempo e energia em máquinas reais.
 
 > **Atualização (2026-11-10).** O fenômeno de fundo já foi observado. Oripov et al. (2025) mostram que o tempo até a acurácia alvo quase não muda com N, embora o tempo para estimar o gradiente cresça com N. Li et al. (2018) mostram que a dimensão intrínseca quase não muda com o tamanho da rede. A contribuição possível é quantificar esse custo em bits, com SNR e energia, e ligá-lo à estrutura da tarefa. Ver [leituras](08-leituras.md).
 
@@ -63,10 +65,10 @@ A forma é a capacidade de canal de Shannon (1948). O que seria novo é definir 
 
 | Ferramenta | O que descreve | Previsão ou limite |
 |---|---|---|
-| Fourier | quantos tons cabem numa janela | $T \ge N/B$ para leitura completa |
+| Fourier | quantos tons cabem numa janela | $`T \ge N/B`$ para leitura completa |
 | Laplace | o sinal enquanto os pesos mudam: oscilação com decaimento | o tom vira uma linha lorentziana com largura proporcional à taxa de mudança |
-| Shannon | bits por uso do canal com ruído | $\log_2(1+\mathrm{SNR})$ por tom |
-| Holevo | bits por medida em $n$ qubits | no máximo $n$ bits, então pelo menos $I/n$ execuções do circuito |
+| Shannon | bits por uso do canal com ruído | $`\log_2(1+\mathrm{SNR})`$ por tom |
+| Holevo | bits por medida em $`n`$ qubits | no máximo $`n`$ bits, então pelo menos $`I/n`$ execuções do circuito |
 
 Previsão testável que sai de Laplace: quanto maior a taxa de aprendizado, mais largas as linhas e menos canais cabem na banda.
 
@@ -74,7 +76,7 @@ Limite da ponte: Shannon supõe um canal estacionário, e a perda de uma rede em
 
 ## 6. A versão quântica
 
-Pelo limite de Holevo (1973), $n$ qubits entregam no máximo $n$ bits por medida. O número de execuções do circuito tem de ser pelo menos $I/n$ antes de contar o ruído. Para o treino ser viável, a conta precisa fechar com preparação de estado, leitura, comunicação e correção de erros incluídas.
+Pelo limite de Holevo (1973), $`n`$ qubits entregam no máximo $`n`$ bits por medida. O número de execuções do circuito tem de ser pelo menos $`I/n`$ antes de contar o ruído. Para o treino ser viável, a conta precisa fechar com preparação de estado, leitura, comunicação e correção de erros incluídas.
 
 Critério de vantagem verificável adotado no ensaio: a acurácia, conferida classicamente em dados separados, é atingida com menor custo total que o do melhor treino clássico ou analógico. O primeiro lugar para procurar isso são dados que já nascem quânticos, sem etapa de carga.
 
@@ -84,7 +86,7 @@ Ponte a examinar: o método LCHS (An, Liu e Lin, 2023) escreve um decaimento com
 
 ```mermaid
 flowchart TD
-    H["Hipótese: T ≥ I/(B·log₂(1+SNR)),<br/>com I sublinear em N"] --> R1{"I cresce proporcional a N<br/>em tarefas realistas?"}
+    H["Hipótese: T ≥ I/(B·b_ef),<br/>com I sublinear em N<br/>(forma revisada no E15)"] --> R1{"I cresce proporcional a N<br/>em tarefas realistas?"}
     H --> R2{"A fórmula erra por ordens<br/>de grandeza na bancada?"}
     H --> R3{"O treino digital segue mais<br/>barato por joule, com todas<br/>as conversões contadas?"}
     R1 -- "sim" --> X["refutada"]
@@ -96,7 +98,7 @@ O ensaio trata a terceira possibilidade como séria.
 
 ## 8. O problema que vem primeiro
 
-Ainda não se sabe se $I$ tem definição única, ou se muda tanto com o modelo e o otimizador que deixa de dizer algo sobre a tarefa. O E11 não distingue essas situações. A [questão 3](03-questoes-abertas.md#3-como-definir-i) propõe uma definição condicional e um desenho experimental para separar as dependências.
+Ainda não se sabe se $`I`$ tem definição única, ou se muda tanto com o modelo e o otimizador que deixa de dizer algo sobre a tarefa. O E11 não distingue essas situações. A [questão 3](03-questoes-abertas.md#3-como-definir-i) propõe uma definição condicional e um desenho experimental para separar as dependências.
 
 ## 9. Etapas propostas para o doutorado
 
