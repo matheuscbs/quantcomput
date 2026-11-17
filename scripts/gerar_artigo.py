@@ -1,4 +1,4 @@
-"""Gera artigo/resultados-gerados.tex a partir dos JSONs oficiais dos experimentos E13 a E16.
+"""Gera artigo/resultados-gerados.tex a partir dos JSONs oficiais dos experimentos E13 a E17.
 
 Nenhum número das tabelas e figuras desses experimentos é digitado à mão no artigo: tudo sai daqui.
 Uso: python3 scripts/gerar_artigo.py   (na raiz do repositório)
@@ -145,5 +145,40 @@ if e14:
                     ("P3_contagem", "EquatorzePtres"), ("P4_contagem", "EquatorzePquatro")):
         out.append(macro(nome, str(a[k])))
 
+# ---------------- E17 ----------------
+e17 = ler("E17-cache-sinaptico/resultados/cache-sinaptico.json")
+if e17:
+    cel = e17["celulas"]
+    proj = [x for x in e17["linhas"] if x["r"] > 0]
+    out.append(macro("EdezessetePrevMed", pt(e17["H18"]["mediana_rho_sobre_prev"], 2)))
+    out.append(macro("EdezessetePrevSp", pt(e17["H18"]["spearman"], 2)))
+    out.append(macro("EdezessetePrevLogT", pt(e17["H18"]["exploratorio_mqo"]["logT"], 2)))
+    out.append(macro("EdezesseteRhoMin", pt(min(x["rho"] for x in proj), 0)))
+    out.append(macro("EdezesseteRhoMax", pt(max(x["rho"] for x in proj), 0)))
+    for arq, nome in (("prof", "Prof"), ("larga", "Larga")):
+        v = e17["H17"]["por_arq"][arq]
+        out.append(macro(f"EdezesseteRhoProj{nome}", pt(v["rho_proj"])))
+        out.append(macro(f"EdezesseteRhoBp{nome}", pt(v["rho_bp"])))
+        out.append(macro(f"EdezesseteRazao{nome}", pt(v["razao"])))
+    out.append(macro("EdezesseteGmin", pt(min(e17["H19"]["G16"]))))
+    out.append(macro("EdezesseteGmax", pt(max(e17["H19"]["G16"]))))
+    out.append(macro("EdezesseteCens", str(e17["censuradas"])))
+    linhas = []
+    for arq in ("prof", "larga"):
+        for r in (16, 32, 64):
+            c = cel[f"{arq}-r{r}"]
+            ls = [x for x in proj if x["arq"] == arq and x["r"] == r]
+            w1 = sum(x["Wc"][0] / x["N"] for x in ls) / len(ls)
+            w256 = sum(x["Wc"][-1] / x["N"] for x in ls) / len(ls)
+            linhas.append(f"{'prof.' if arq == 'prof' else 'larga'} & {r} & {milhar(c['passos'])} & {pt(c['rho'])} & "
+                          f"{pt(c['rho_prev'])} & {pt(c['G'][2])} & {pt(c['G'][-1])} & {pt(w1, 0)} & {pt(w256)} \\\\")
+    out.append("\\newcommand{\\EdezesseteTabela}{%\n\\begin{table*}[t]\n\\centering\n"
+               "\\caption{E17: custo de gravação no treino projetado (média de 3 sementes). $\\rho = M/M_{\\min}$; "
+               "$\\rho_{\\text{prev}}$ da Eq.~\\eqref{eq:rhoprev}; $G(\\kappa)$, redução de $M$ pelo cache; "
+               "$W/N$, escritas por peso (análise posterior)}\n\\label{tab:e17}\n"
+               "\\begin{tabular}{lrrrrrrrr}\n\\toprule\n"
+               "& $r$ & passos & $\\rho$ & $\\rho_{\\text{prev}}$ & $G(16)$ & $G(256)$ & $W/N$, $\\kappa{=}1$ & $W/N$, $\\kappa{=}256$ \\\\\n"
+               "\\midrule\n" + "\n".join(linhas) + "\n\\bottomrule\n\\end{tabular}\n\\end{table*}}\n")
+
 open(SAIDA, "w").write("".join(out))
-print("gerado:", SAIDA, "| E13", bool(e13), "E14", bool(e14), "E15", bool(e15), "E16", bool(e16))
+print("gerado:", SAIDA, "| E13", bool(e13), "E14", bool(e14), "E15", bool(e15), "E16", bool(e16), "E17", bool(e17))

@@ -44,7 +44,7 @@ $q$ é a SNR por coordenada quando o gradiente chega por $r$ projeções aleató
 
 Num modelo quadrático com treino projetado, a fórmula ficou a no máximo cerca de 20% do $\rho$ medido em 12 combinações de N, r e SNR (`experimentos/E17-cache-sinaptico/auxiliares/toy2.py`).
 
-Com um cache de limiar $\kappa\sigma$, a simulação de passeio aleatório dá ganho $G(\kappa)$ de cerca de $0{,}75\,\kappa$ até saturar em $\rho$. A carga média do cache cresce em proporção a κ (`auxiliares/rw.py`). Se gravar custa $e_{\text{esc}}$ por unidade e manter o cache custa $e_{\text{cache}}$ por unidade e por passo, o custo de consolidação cai como $1/\kappa$ e o de manutenção sobe como $\kappa$. O ótimo fica em $\kappa^* \propto \sqrt{e_{\text{esc}}/e_{\text{cache}}}$, e o custo mínimo cresce como $\sqrt{e_{\text{esc}}\,e_{\text{cache}}}$.
+Com um cache de limiar $\kappa\sigma$, a simulação de passeio aleatório dá ganho $G(\kappa)$ de cerca de $0{,}75\,\kappa$ até saturar em $\rho$. A carga média do cache cresce em proporção a κ (`auxiliares/rw.py`). Se gravar custa $e_{\text{esc}}$ por unidade e manter o cache custa $e_{\text{cache}}$ por unidade e por passo, o custo de consolidação cai como $1/\kappa$ e o de manutenção sobe como $\kappa$. O ótimo fica em $\kappa^* \propto \sqrt{e_{\text{esc}}/e_{\text{cache}}}$, e o custo mínimo cresce como $\sqrt{e_{\text{esc}}\,e_{\text{cache}}}$. No E17 (medido, análise posterior), $G$ e a carga cresceram um pouco abaixo de linear em κ, e o expoente de κ* que essas inclinações preveem ficou entre 0,56 e 0,77. A grade de κ foi grossa demais para medir o expoente direto.
 
 ## 4. A forma completa (proposto)
 
@@ -61,7 +61,9 @@ com o piso $M_{\min} \ge$ o deslocamento necessário para guardar os bits úteis
 
 ## 5. Então, quantos bits custa aprender
 
-A resposta tem duas contas. Os bits que entram são fixados pela tarefa: cerca de 38 mil entregues e cerca de 3 mil úteis em Fashion-MNIST com 10 classes (medido). Os bits que se gravam são esses multiplicados por $\rho$. No E17 (medido), $\rho$ ficou entre 21 e 49 no treino projetado e perto de 5 no backprop, e a fórmula da seção 3 previu cada célula com erro abaixo de 5%. Sem cache, o sistema grava dezenas de vezes o que guarda. Um cache com limiar de 16 passos típicos reduz a gravação de 9 a 18 vezes, e com limiar maior chega ao mínimo.
+A resposta tem duas contas. Os bits que entram são fixados pela tarefa: cerca de 38 mil entregues e cerca de 3 mil úteis em Fashion-MNIST com 10 classes (medido). Os bits que se gravam são esses multiplicados por $\rho$. No E17 (medido), $\rho$ ficou entre 21 e 49 no treino projetado e perto de 5 no backprop, e a fórmula da seção 3 previu cada célula com erro abaixo de 5%. Sem cache, o sistema grava dezenas de vezes o que guarda. Um cache com limiar de 16 passos típicos reduz a gravação de 9 a 18 vezes, e com limiar maior chega ao mínimo. Contado em eventos, o cache com κ = 256 escreveu cada peso uma vez, contra 141 a 884 escritas por peso com κ = 1 (medido, análise posterior).
+
+Em resumo: o custo de aprender, em bits, é o que a tarefa exige vezes $\rho$, e $\rho$ depende de quanto ruído cada atualização carrega, não do tamanho da rede. No regime medido, $\rho \approx \sqrt T$. Um sistema que lê pouco por passo precisa de mais passos e grava mais, a menos que acumule antes de consolidar, como faz a sinapse.
 
 ## 6. Testes
 
@@ -73,7 +75,8 @@ A resposta tem duas contas. Os bits que entram são fixados pela tarefa: cerca d
 
 ## 7. Limites
 
-- $M = \sum\lvert\Delta w\rvert$ é uma medida de custo escolhida por Li e van Rossum. Um dispositivo real pode cobrar por evento de escrita, por nível alterado ou por pulso. O E17 registra também o número de escritas.
+- $M = \sum\lvert\Delta w\rvert$ é uma medida de custo escolhida por Li e van Rossum. Um dispositivo real pode cobrar por evento de escrita, por nível alterado ou por pulso. O E17 contou também os eventos, e o cache os reduziu ainda mais que $M$.
 - No E17, o cache não muda a trajetória do treino. Ele mede o custo de gravar e não ganha nada em acurácia.
-- A fórmula supõe que o sinal se espalha por igual pelas coordenadas. Gradientes reais são heterogêneos, e o teste dirá quanto isso pesa.
+- A fórmula supõe que o sinal se espalha por igual pelas coordenadas. No E17 isso não pesou, porque o treino ficou no regime em que o ruído domina e nesse regime $\rho \approx \sqrt T$ quase não depende de como o sinal se distribui (derivado). No regime de deriva, em que $\rho$ dependeria de $\sqrt{N/r}$, a heterogeneidade pode pesar, e esse regime não foi alcançado.
+- O cache do E17 não decai. Uma sinapse real perde o transitório se ele não for consolidado, e isso fica para o E18.
 - Os trabalhos de 2025 e 2026 citados aqui (Tkachenko; arXiv:2602.15787; arXiv:2605.28336) ainda são pré-publicações.

@@ -67,6 +67,13 @@ Médias de 3 sementes.
 - **Exploratório, energia com preço de manutenção.** Nas duas células prof com r = 16 e r = 32, o mínimo ficou em κ = 16 com $c$ = 0,01 (custo de 4,1 a 5,1 vezes menor que sem cache), em κ = 64 a 256 com $c$ = 0,001 e no maior κ da grade com $c$ = 0,0001. Quando manter custa mais, o ótimo vai para κ menor, como previsto. A lei $\sqrt c$ não foi ajustada.
 - **Exploratório, $M_{\min}$.** Cresceu 1,6 vezes da rede prof para a larga, com N 3,4 vezes maior.
 
+### Análises posteriores ao resultado
+
+Feitas depois do veredito, com os mesmos dados (`resultados/cache-sinaptico.json`), sem critério registrado.
+
+- **Eventos de escrita.** O campo `Wc` conta as consolidações, incluindo a descarga final do cache. Com κ = 1 houve de 141 a 884 escritas por peso (de 0,20 a 0,45 vez $N \cdot T$). Com κ = 256 houve 1,0 escrita por peso nas 6 células. Se o dispositivo cobra por evento e não por $\lvert\Delta w\rvert$, o cache reduz o número de escritas de 141 a 884 vezes em relação a κ = 1, mais do que reduz $M$.
+- **κ ótimo contra o preço de manutenção.** Interpolando $\log E$ por uma parábola em $\log\kappa$ nos três pontos em volta do mínimo da grade, o κ ótimo com $c$ = 0,01 ficou entre 12 e 25. Nas 4 células em que o mínimo também foi interior com $c$ = 0,001, κ* cresceu de 5,4 a 9,7 vezes quando $c$ caiu 10 vezes. A lei derivada, $\kappa^* \propto c^{-1/2}$, daria 3,2 vezes, e o expoente interpolado ficou entre 0,74 e 0,99. A conta da seção 3 do docs/09 supõe $G \propto \kappa$ e $L \propto \kappa$. Medidas entre κ = 4 e κ = 64, as inclinações foram $G \propto \kappa^{0{,}57\text{ a }0{,}85}$ e $L \propto \kappa^{0{,}73\text{ a }0{,}93}$. Com elas, o expoente previsto de κ* seria $1/(\alpha+\beta)$, entre 0,56 e 0,77. A interpolação numa grade de fator 4 deu valores acima desse intervalo, e esta leitura não confirma nem refuta a lei; ela precisa de uma grade fina em κ.
+
 **O que isso significa.** Sem cache, o treino por medidas ruidosas grava de 21 a 49 vezes o deslocamento que guarda, e o backprop, cerca de 5 vezes. A fórmula do passeio aleatório previu cada célula com erro abaixo de 5%. Como $\rho \approx \sqrt T$ e T não cresce com N (E13), o desperdício também não cresce com N nesse regime. Um cache com limiar de 16 passos típicos reduz a gravação de 9 a 18 vezes.
 
 Limites: o cache não muda a trajetória, então o resultado mede a escrita e não a acurácia. O custo $\sum\lvert\Delta w\rvert$ é o de Li e van Rossum, e um dispositivo real pode cobrar por evento de escrita. O regime de deriva dominante ($\rho \propto \sqrt{N/r}$) não foi alcançado aqui.

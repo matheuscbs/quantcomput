@@ -1,6 +1,6 @@
 % Artigo no formato IEEE (IEEEtran, duas colunas), derivado do ensaio "Quantos bits custa aprender?".
 % Compilar: python3 scripts/gerar_artigo.py && tectonic main.tex   (ou: make artigo, na raiz do repositório)
-% Números de E13 a E16: artigo/resultados-gerados.tex, gerado a partir dos JSONs oficiais.
+% Números de E13 a E17: artigo/resultados-gerados.tex, gerado a partir dos JSONs oficiais.
 \documentclass[journal]{IEEEtran}
 
 \usepackage{fontspec}
@@ -34,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-Hardware analógico, óptico e quântico raramente dispõe de um caminho de volta exato para executar backpropagation e, por isso, estima o gradiente por perturbação, lendo a perda através de um canal de medida. Este trabalho formula o custo desse treinamento em bits entregues ao otimizador e o testa em seis experimentos em Fashion-MNIST, com perceptrons de 13.002 a 407 mil parâmetros e critérios registrados no controle de versão antes de cada execução. Três resultados respondem às perguntas que a formulação original deixava abertas. Primeiro, a informação útil de cada medida é limitada pelo ruído de amostragem do minilote, que nos lotes usuais supera o sinal: a acurácia acompanha a informação efetiva por projeção, $\tfrac12\log_2(1+\SNR_{\text{ef}})$, com $R^2 = \EquinzeRdois$, e não a capacidade nominal do canal ($R^2 = \EquinzeRdoisNominal$). Segundo, o total de bits até uma acurácia alvo depende sobretudo da tarefa: num desenho fatorial com tarefa, arquitetura, inicialização e algoritmo, a tarefa explicou \EtrezeTarefa\% da variação de $\log_2 I$ e as interações, \EtrezeInter\%; $I$ cresceu com o número de classes e não com o número de parâmetros. Terceiro, medindo o gradiente por diferença central da perda, sem backpropagation, a acurácia do canal ideal se manteve, e o custo passou a ser dominado pela leitura: ler cada perda separadamente exigiu cerca de 16 bits por leitura, enquanto ler a diferença exigiu 2. Os experimentos são simulações em CPU, numa só família de tarefas, e não medem energia.
+Hardware analógico, óptico e quântico raramente dispõe de um caminho de volta exato para executar backpropagation e, por isso, estima o gradiente por perturbação, lendo a perda através de um canal de medida. Este trabalho formula o custo desse treinamento em bits entregues ao otimizador e o testa em sete experimentos em Fashion-MNIST, com perceptrons de 13.002 a 407 mil parâmetros e critérios registrados no controle de versão antes de cada execução. Três resultados respondem às perguntas que a formulação original deixava abertas. Primeiro, a informação útil de cada medida é limitada pelo ruído de amostragem do minilote, que nos lotes usuais supera o sinal: a acurácia acompanha a informação efetiva por projeção, $\tfrac12\log_2(1+\SNR_{\text{ef}})$, com $R^2 = \EquinzeRdois$, e não a capacidade nominal do canal ($R^2 = \EquinzeRdoisNominal$). Segundo, o total de bits até uma acurácia alvo depende sobretudo da tarefa: num desenho fatorial com tarefa, arquitetura, inicialização e algoritmo, a tarefa explicou \EtrezeTarefa\% da variação de $\log_2 I$ e as interações, \EtrezeInter\%; $I$ cresceu com o número de classes e não com o número de parâmetros. Terceiro, medindo o gradiente por diferença central da perda, sem backpropagation, a acurácia do canal ideal se manteve, e o custo passou a ser dominado pela leitura: ler cada perda separadamente exigiu cerca de 16 bits por leitura, enquanto ler a diferença exigiu 2. Um sétimo experimento mede o custo de gravar os pesos: sem memória transitória, o treino por projeções ruidosas percorreu de \EdezesseteRhoMin{} a \EdezesseteRhoMax{} vezes o deslocamento que guardou, como prevê um passeio aleatório com a SNR de cada atualização, e um acumulador que só consolida acima de um limiar reduziu essa escrita de \EdezesseteGmin{} a \EdezesseteGmax{} vezes. Os experimentos são simulações em CPU, numa só família de tarefas, e não medem energia.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -47,13 +47,14 @@ treinamento físico, gradiente por perturbação, capacidade de canal, ruído de
 
 Sem caminho de volta, o hardware precisa aprender pelo que consegue medir: perturba os parâmetros, lê a perda e infere em que direção mudar. A motivação energética para redes físicas é estimada em mais de dez ordens de grandeza, numa conta que exclui conversão, controle e medição~\cite{tkachenko2025}. Como o treino acontece na medição, a quantidade de informação que precisa atravessar o canal de medida, e o custo de cada bit dela, determinam parte relevante do custo total.
 
-A versão anterior deste trabalho propôs que o tempo de leitura fosse limitado pela informação exigida pela tarefa, $T \ge I/(B\log_2(1+\SNR))$, e mostrou num canal simulado que o número de projeções necessárias não crescia com o número de parâmetros. Três perguntas ficaram abertas: como as projeções eram obtidas e o que custava obtê-las fisicamente; qual a relação entre número de medidas, precisão de cada uma e informação recebida; e como definir $I$ separando tarefa, arquitetura, inicialização e algoritmo. Esta versão responde às três com quatro experimentos novos (E13 a E16), todos com critérios registrados antes da execução.
+A versão anterior deste trabalho propôs que o tempo de leitura fosse limitado pela informação exigida pela tarefa, $T \ge I/(B\log_2(1+\SNR))$, e mostrou num canal simulado que o número de projeções necessárias não crescia com o número de parâmetros. Três perguntas ficaram abertas: como as projeções eram obtidas e o que custava obtê-las fisicamente; qual a relação entre número de medidas, precisão de cada uma e informação recebida; e como definir $I$ separando tarefa, arquitetura, inicialização e algoritmo. Esta versão responde às três com quatro experimentos novos (E13 a E16) e acrescenta uma quarta pergunta, sobre o custo de gravar o que foi aprendido (E17). Todos têm critérios registrados antes da execução.
 
 As contribuições são:
 \begin{enumerate}
 \item uma correção da hipótese: o $\SNR$ que limita a informação de cada medida é o efetivo, que soma o ruído do minilote ao do canal; o termo do minilote é $B/B_{\text{simple}}$, a escala de ruído do gradiente de McCandlish et al.~\cite{mccandlish2018}. Com essa correção, a informação efetiva explica a acurácia com $R^2 = \EquinzeRdois$ (E15), e a capacidade nominal do canal não explica ($R^2 = \EquinzeRdoisNominal$);
 \item uma medida fatorial de $I$ (E13) em que a tarefa explica \EtrezeTarefa\% da variação de $\log_2 I$, com $I$ crescente no número de classes nas \EtrezeHdoze{} combinações de arquitetura, inicialização e algoritmo, e sem crescimento com o número de parâmetros;
 \item a troca do gradiente exato por medidas físicas simuladas (E14): diferença central da perda, sem backpropagation, com a precisão do conversor como variável. A leitura da diferença, como num amplificador lock-in, reduz de cerca de 16 para 2 os bits exigidos por leitura;
+\item a medida do custo de gravação dos pesos (E17): a ineficiência de caminho $\rho = M/M_{\min}$, prevista com erro mediano de 2\% pela SNR de cada atualização, e a redução dessa escrita por um cache transitório, análogo à plasticidade de fase inicial~\cite{li2020};
 \item o registro dos critérios no controle de versão antes de cada execução e o registro dos resultados negativos, inclusive os desta versão.
 \end{enumerate}
 
@@ -109,6 +110,18 @@ em que $\beta$ é o total de bits entregues por $C$. Qualquer protocolo que atin
 
 Durante o treino, os pesos variam e cada tom adquire decaimento. Pela transformada de Laplace, a linha espectral assume forma lorentziana com largura proporcional à taxa de variação, o que prevê menos canais resolvíveis para taxas de aprendizado maiores. A Eq.~\eqref{eq:hipotese} supõe canal estacionário; a extensão a esse regime continua em aberto. Na versão quântica, o limite de Holevo~\cite{holevo1973} restringe $n$ qubits a no máximo $n$ bits por medida, e o número de execuções do circuito é ao menos $I/n$.
 
+\subsection{Custo de gravação}
+\label{sec:gravacao}
+
+$I$ conta os bits que chegam ao otimizador. Um sistema físico também paga para gravar os pesos, e na biologia essa parcela é a cara: a memória de longo prazo na mosca custa cerca de 10~mJ por bit~\cite{girard2023}, e a análise termodinâmica de redes físicas situa o custo irredutível na escrita dos parâmetros, não na inferência~\cite{tkachenko2025}. Seguindo Li e van Rossum~\cite{li2020}, o custo de gravação é o comprimento do caminho dos pesos, $M = \sum_t\sum_i|\Delta w_i(t)|$, e o mínimo para chegar ao mesmo ponto é $M_{\min} = \lVert w_T - w_0\rVert_1$. A razão $\rho = M/M_{\min}$ mede quanto se grava e depois se desfaz.
+
+Se cada peso faz um passeio aleatório com deriva, e o gradiente chega por $r$ projeções aleatórias de $\SNR_{\text{ef}}$ dado pela Eq.~\eqref{eq:snref}, a SNR por coordenada de cada atualização é $q = (r/N)\,\SNR_{\text{ef}}/(1+\SNR_{\text{ef}})$, e
+\begin{equation}
+\label{eq:rhoprev}
+\rho_{\text{prev}} = \frac{T\,\mathbb{E}|\mathcal N(\sqrt q,1)|}{\mathbb{E}|\mathcal N(T\sqrt q,T)|}.
+\end{equation}
+Quando a deriva domina ($Tq \gg 1$), $\rho \to \sqrt{2/\pi}\sqrt{(N/r)(1+1/\SNR_{\text{ef}})}$, que cresce com $\sqrt N$; quando o ruído domina ($Tq \ll 1$), $\rho \to \sqrt T$. Um cache transitório que acumula a atualização de cada peso e só a consolida quando passa de $\kappa\sigma$, em que $\sigma$ é o tamanho típico de um passo, não muda a trajetória e reduz $M$ por um fator $G(\kappa)$. Se manter o cache custa $c$ por unidade e por passo e a carga cresce com $\kappa$, o custo total tem mínimo interior, com $\kappa^* \propto c^{-1/2}$ quando $G$ e a carga são lineares em $\kappa$.
+
 \section{Método experimental}
 
 \subsection{Tarefa, modelos e otimização}
@@ -142,11 +155,14 @@ E13 & tarefa, arquitetura, inicialização, algoritmo & $I$ é da tarefa? \\
 E14 & forma de leitura, $b$ & o resultado sobrevive sem backpropagation? \\
 E15 & lote $B \le 2048$, $b$ & o minilote limita a informação útil? \\
 E16 & lote $B \ge 8192$, $b$ & com o minilote limpo, o canal pesa? \\
+E17 & cache $\kappa$, $r$, $N$ & quanto se grava além do necessário? \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 No E13, cada passo entrega $r = 32$ projeções por um canal gaussiano de 2 bits, 64 bits por passo, e $I$ é o total de bits até a primeira avaliação (a cada 10 passos) que atinge o alvo $1/k + 0{,}8\,(\text{ref}_k - 1/k)$, em que $\text{ref}_k$ é a acurácia média do backpropagation na tarefa de $k$ classes (as classes $0$ a $k-1$). O desenho é completo: $k \in \{2, 5, 10\}$, duas arquiteturas, duas inicializações (padrão do PyTorch e Xavier normal) e dois algoritmos (Adam e SGD com momento 0,9 e taxa 1,0, escolhida numa calibração prévia), com 3 sementes. A soma dos quadrados de $\log_2 I$ entre as 24 células é decomposta com contrastes ortogonais.
+
+No E17, o treino usa SGD sem momento ($\mathrm{lr} = 10$, calibrado com uma semente fora do teste), o canal gaussiano de 2 bits e o alvo do E13 com 10 classes, e para no alvo ou em 6.000 passos. A grade cruza as duas arquiteturas do E13 com $r \in \{16, 32, 64\}$ e 3 sementes, mais 6 execuções de backpropagation ($\mathrm{lr} = 0{,}3$). Os cinco valores de $\kappa \in \{1, 4, 16, 64, 256\}$ são medidos na mesma execução, porque o cache não altera os pesos usados no forward. $\sigma$ é a raiz quadrática média das atualizações nos 10 primeiros passos.
 
 Nos E15 e E16, $\SNR_B$ é medido durante o treino: a cada 100 passos, as $r$ direções do passo são aplicadas aos gradientes de 8 minilotes independentes, e a variância entre eles dá o ruído de amostragem. $b_{\text{ef}}$ vem da Eq.~\eqref{eq:snref}.
 
@@ -196,6 +212,12 @@ Os cinco critérios do E14 foram aprovados em todas as células (Tabela~\ref{tab
 
 As \EtrezeExec{} execuções atingiram o alvo (\EtrezeCens{} censuradas). A tarefa explicou \EtrezeTarefa\% da soma dos quadrados de $\log_2 I$ entre as células, e todas as interações somadas, \EtrezeInter\%. Entre os outros efeitos, o maior foi o do algoritmo (\EtrezeAlg\%), seguido da interação entre inicialização e algoritmo (\EtrezeZG\%) e da inicialização (\EtrezeInit\%); a arquitetura explicou \EtrezeArq\%. $I$ cresceu com $k$ nas \EtrezeHdoze{} combinações (Tabela~\ref{tab:e13} e Fig.~\ref{fig:e13}), com inclinação exploratória de \EtrezeExpK{} em escala log-log. A rede larga, com cerca de 3,4 vezes mais parâmetros, usou em média geométrica \EtrezeRazaoLarga{} vez os bits da rede profunda. A interação visível é a do SGD com momento, que precisou de cerca de duas vezes os bits do Adam com a inicialização padrão e de menos bits com a Xavier.
 
+\subsection{E17: o custo de gravar}
+
+\EdezesseteTabela
+
+As 18 execuções projetadas e as 6 de backpropagation atingiram o alvo (\EdezesseteCens{} censuradas), e os três critérios foram aprovados (Tabela~\ref{tab:e17}). Sem cache, $\rho$ ficou entre \EdezesseteRhoMin{} e \EdezesseteRhoMax{} no treino projetado. A mediana foi \EdezesseteRhoProjProf{} na rede profunda e \EdezesseteRhoProjLarga{} na larga, contra \EdezesseteRhoBpProf{} e \EdezesseteRhoBpLarga{} do backpropagation, que chegou ao alvo em 30 a 60 passos. A Eq.~\eqref{eq:rhoprev}, com o $\SNR_B$ medido, previu cada execução: a mediana de $\rho/\rho_{\text{prev}}$ foi \EdezessetePrevMed{} e a correlação de Spearman, \EdezessetePrevSp. Numa regressão exploratória de $\log\rho$, o coeficiente de $\log T$ foi \EdezessetePrevLogT{}, e os de $\log N$ e $\log r$ ficaram abaixo de 0,01 em módulo. O treino está no regime em que o ruído domina, $\rho \approx \sqrt T$, e $N$ e $r$ só entram pelo número de passos. O cache reduziu $M$ de \EdezesseteGmin{} a \EdezesseteGmax{} vezes com $\kappa = 16$, crescendo com $\kappa$ em todas as células, e com $\kappa = 256$ chegou a $\rho$, o ganho máximo possível. Numa análise posterior, sem critério registrado, contamos os eventos de escrita: com $\kappa = 256$ houve uma escrita por peso em todas as células, contra centenas com $\kappa = 1$.
+
 \section{Discussão}
 
 \subsection{Respostas às três perguntas}
@@ -214,6 +236,10 @@ Os limites inferiores de ordem zero pagam a dimensão: $\sqrt d$ com pares de av
 
 A energia de leitura não foi medida, mas pode ser estimada pela fronteira dos conversores publicados. Acima de cerca de 9 bits efetivos, a energia por amostra quadruplica a cada bit, passando por cerca de 1~pJ em 9 bits; abaixo de 8 bits, ela quase não cai~\cite{jonsson2013}. Por essa reta, uma leitura de 16 bits custa cerca de $4^{7} \approx 1{,}6\times10^4$ vezes uma de 9 bits, e uma de 2 bits fica no patamar de baixa resolução, perto do custo de 8 bits. A leitura diferencial do E14 economiza, portanto, cerca de quatro ordens de grandeza por leitura, e faz metade das leituras. Quase toda a economia vem de sair do regime de alta resolução; descer de 8 para 2 bits economiza pouco. Para o projeto de hardware, a forma de leitura pesa mais na energia do que o número de medidas. A estimativa cobre só o conversor; a energia da avaliação física da perda, do controle e da escrita dos pesos fica fora.
 
+\subsection{Gravar custa mais que ler}
+
+O E17 separa dois fluxos que a formulação original juntava. O de aquisição, contado em $I$, é fixado pela tarefa. O de gravação é $I$ multiplicado por quanto o sistema escreve e depois desfaz, e esse fator, $\rho$, é previsível pela SNR de cada atualização. O treino por perturbação, que recebe pouca informação por passo, precisa de mais passos e por isso grava de 5 a 7 vezes mais que o backpropagation, mesmo chegando à mesma acurácia. Num dispositivo em que escrever um peso custa mais que ler a perda, como memórias não voláteis, essa parcela pode dominar a conta de energia. A biologia parece resolver o problema com dois estágios, um transitório barato e uma consolidação cara e rara~\cite{li2020}, e o E17 mostra que o mesmo arranjo recupera quase todo o desperdício num treino projetado. O cache não altera a acurácia, porque os pesos usados no forward são os mesmos. Ele só muda o que é escrito na memória durável. Se esses ganhos se mantêm quando o transitório decai, como na plasticidade de fase inicial, não foi testado: no modelo de brinquedo usado antes do registro, o decaimento simples impediu o treino de chegar ao alvo.
+
 \subsection{Backpropagation in situ}
 \label{sec:fotonica}
 
@@ -221,11 +247,11 @@ O método adjunto em fotônica linear~\cite{hughes2018,pai2023} obtém o gradien
 
 \section{Limitações e critérios de refutação}
 
-Todos os experimentos usam uma família de tarefas (subconjuntos de Fashion-MNIST), perceptrons pequenos, CPU e duas ou três sementes. A diferença central do E14 é calculada em float32 sobre a mesma perda digital; nenhum ruído físico de avaliação foi simulado além da quantização do conversor. O estimador não é reescalado e a taxa de aprendizado não foi ajustada por $r$. Nenhuma energia foi medida; a estimativa de energia de conversão usa a fronteira publicada de conversores, não um circuito. O $I$ medido é um limite superior para um protocolo fixo. A hipótese será considerada refutada se $I$ crescer proporcionalmente a $N$ em tarefas maiores, se a Eq.~\eqref{eq:hipotese} errar por ordens de grandeza em bancada, ou se o treino digital continuar mais barato por joule depois de contabilizadas todas as conversões.
+Todos os experimentos usam uma família de tarefas (subconjuntos de Fashion-MNIST), perceptrons pequenos, CPU e duas ou três sementes. A diferença central do E14 é calculada em float32 sobre a mesma perda digital; nenhum ruído físico de avaliação foi simulado além da quantização do conversor. O estimador não é reescalado e a taxa de aprendizado não foi ajustada por $r$. Nenhuma energia foi medida; a estimativa de energia de conversão usa a fronteira publicada de conversores, não um circuito. O $I$ medido é um limite superior para um protocolo fixo. No E17, o custo de gravação é o $\sum|\Delta w|$ de Li e van Rossum; um dispositivo real pode cobrar por evento de escrita, por nível alterado ou por pulso, e o regime em que a deriva domina e $\rho$ cresce com $\sqrt N$ não foi alcançado. A hipótese será considerada refutada se $I$ crescer proporcionalmente a $N$ em tarefas maiores, se a Eq.~\eqref{eq:hipotese} errar por ordens de grandeza em bancada, ou se o treino digital continuar mais barato por joule depois de contabilizadas todas as conversões.
 
 \section{Conclusão}
 
-O custo de treinar hardware sem backpropagation foi formulado em bits entregues ao otimizador e testado em seis experimentos com critérios registrados antes da execução. Nas redes e na tarefa testadas, esse custo dependeu da tarefa e não do número de parâmetros: a tarefa explicou \EtrezeTarefa\% da variação de $\log_2 I$, e $I$ cresceu com o número de classes. A informação útil de cada medida foi limitada pelo ruído de amostragem do minilote, de modo que a capacidade nominal do canal precisa ser substituída pelo $\SNR$ efetivo, cujo termo de amostragem é $B/B_{\text{simple}}$. O resultado se manteve com medidas por perturbação, sem backpropagation, e o custo passou a ser dominado pela forma de leitura: 16 bits por leitura absoluta contra 2 por leitura diferencial. Ficam em aberto o regime em que o canal domina o minilote, que nenhum lote desta tarefa alcançou; a explicação do crescimento de $I$ com $k$ mais rápido que linear; a medida direta da informação mútua; tarefas maiores; e a medição de energia em bancada analógica com instrumentação externa, que é a etapa seguinte do projeto.
+O custo de treinar hardware sem backpropagation foi formulado em bits entregues ao otimizador e testado em sete experimentos com critérios registrados antes da execução. Nas redes e na tarefa testadas, esse custo dependeu da tarefa e não do número de parâmetros: a tarefa explicou \EtrezeTarefa\% da variação de $\log_2 I$, e $I$ cresceu com o número de classes. A informação útil de cada medida foi limitada pelo ruído de amostragem do minilote, de modo que a capacidade nominal do canal precisa ser substituída pelo $\SNR$ efetivo, cujo termo de amostragem é $B/B_{\text{simple}}$. O resultado se manteve com medidas por perturbação, sem backpropagation, e o custo passou a ser dominado pela forma de leitura: 16 bits por leitura absoluta contra 2 por leitura diferencial. Gravar os pesos tem custo próprio: o treino projetado percorreu dezenas de vezes o deslocamento que guardou, numa razão prevista pela SNR de cada atualização, e um cache transitório com consolidação por limiar trouxe essa escrita para perto do mínimo. Ficam em aberto o regime em que o canal domina o minilote, que nenhum lote desta tarefa alcançou; a explicação do crescimento de $I$ com $k$ mais rápido que linear; a medida direta da informação mútua; tarefas maiores; um transitório que decai, com consolidação só do que se repete; e a medição de energia em bancada analógica com instrumentação externa, que é a etapa seguinte do projeto.
 
 \appendices
 \section{Registro dos critérios}
@@ -243,6 +269,7 @@ E13 & c383af8 & H11 aprovada; H12 aprovada (\EtrezeHdoze{} de 8) \\
 E14 & 88dca6c & P0 a P4 aprovados (6 de 6 células cada) \\
 E15 & 88dca6c & H14 parcial (H14a aprovado, H14b reprovado); H10$'$ aprovada \\
 E16 & b2dc840 & inconclusivo (R0 reprovado: $\SNR_B$ abaixo de 10) \\
+E17 & f822986 & H17, H18 e H19 aprovadas \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -267,7 +294,7 @@ Total de bits governa a acurácia (H10) & refutada no E12: $R^2$ de 0,70 a 0,84 
 \end{table}
 
 \section*{Disponibilidade de código e dados}
-{\sloppy Scripts, registros completos, sementes, versões das dependências e o gerador das tabelas estão no repositório do projeto, com o mapeamento entre cada afirmação e o arquivo de resultado correspondente. As tabelas e figuras de E13 a E16 são geradas por \path{scripts/gerar_artigo.py} a partir dos resultados oficiais.\par}
+{\sloppy Scripts, registros completos, sementes, versões das dependências e o gerador das tabelas estão no repositório do projeto, com o mapeamento entre cada afirmação e o arquivo de resultado correspondente. As tabelas e figuras de E13 a E17 são geradas por \path{scripts/gerar_artigo.py} a partir dos resultados oficiais.\par}
 
 \bibliographystyle{IEEEtran}
 \bibliography{referencias}
