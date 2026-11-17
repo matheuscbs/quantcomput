@@ -1,6 +1,6 @@
 # E15: ruído do minilote e informação efetiva por medida
 
-> Linha de pesquisa: questão 2 do instituto (medidas, precisão e informação); H14 e a forma corrigida de H10. Critérios registrados no git antes da execução (88dca6c). No roteiro anterior, este teste se chamava E13d.
+> Linha de pesquisa: questão 2 do instituto (medidas, precisão e informação); H14 e a forma corrigida de H10. Critérios registrados no git antes da execução (a0217d6). No roteiro anterior, este teste se chamava E13d.
 
 ## Pergunta
 
@@ -67,4 +67,4 @@ make e15
 
 - Sementes: pesos `manual_seed(s)`, direções `Generator().manual_seed(1000 + s)`, lotes `default_rng(s)`, canal `Generator().manual_seed(2000 + s)`, lotes extras da medida de SNR `default_rng(3000 + s)`; s = 0, 1.
 - Ambiente: `poetry.lock`, Python 3.12, CPU com 2 threads por processo.
-- Nota de registro: igual à do E14 (processos iniciados segundos antes do commit 88dca6c, com script idêntico).
+- Nota de registro: igual à do E14 (processos iniciados segundos antes do commit a0217d6, com script idêntico).

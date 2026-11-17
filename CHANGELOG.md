@@ -19,12 +19,13 @@ Histórico de versões do conhecimento e do código. Convenção em [ARQUITETURA
 - `docs/02-resultados.md` passa a resumir E13 a E17; `artigo/README.md` descreve o artigo atual e o gerador de tabelas.
 - Versão do `pyproject.toml` e do `CITATION.cff` alinhada com o CHANGELOG; referência a `docs/05-reprodutibilidade.md` corrigida.
 - Referências a ferramentas e caminhos da base de notas pessoal retiradas de `docs/04` e `docs/08`.
+- Histórico reescrito antes da primeira publicação para trocar o e-mail do autor pelo endereço noreply do GitHub. Conteúdo, mensagens e datas dos commits não mudaram, mas os hashes mudaram, e os hashes de pré-registro citados nos READMEs, no CHANGELOG e no artigo foram atualizados para os novos.
 
 ## [0.3.0] - 2026-11-16
 
 ### Adicionado
 
-- E13 (desenho fatorial de I), E14 (perturbação real, sem backpropagation), E15 (ruído do minilote) e E16 (lote acima de B_simple), com critérios commitados antes da execução (c383af8, 88dca6c, b2dc840).
+- E13 (desenho fatorial de I), E14 (perturbação real, sem backpropagation), E15 (ruído do minilote) e E16 (lote acima de B_simple), com critérios commitados antes da execução (d033730, a0217d6, fe356c4).
 - `scripts/gerar_artigo.py`: gera as tabelas e figuras de E13 a E16 no artigo a partir dos JSONs oficiais.
 - Artigo v0.3 completo, com a formulação revisada e as respostas às três perguntas do instituto.
 - Hipóteses H10′, H15 e H16; leituras novas (escala de ruído do gradiente, limites inferiores de ordem zero, energia de conversores) em `docs/08-leituras.md`.
@@ -43,14 +44,14 @@ Histórico de versões do conhecimento e do código. Convenção em [ARQUITETURA
 
 ### Observações
 
-- Os processos oficiais de E14 e E15 começaram alguns segundos antes do commit 88dca6c, por um erro na cadeia de comandos. O script executado é idêntico ao commitado, e nenhum resultado existia no momento do commit.
+- Os processos oficiais de E14 e E15 começaram alguns segundos antes do commit a0217d6, por um erro na cadeia de comandos. O script executado é idêntico ao commitado, e nenhum resultado existia no momento do commit.
 - Lição do E12 aplicada: todos os critérios novos dizem explicitamente "em todas", "em pelo menos n de m" ou "nas duas sementes".
 
 ## [0.2.0] - 2026-11-10
 
 ### Adicionado
 
-- E12 (canal quantizado e ruidoso), com critérios commitados antes da execução (14e5011). Resultado: o total de bits não governa a acurácia (B1 reprovado); a acurácia segue o número de medidas r, e a precisão satura em 1 a 2 bits (ruído) ou 2 a 4 bits (quantização). B3 e B4 aprovados.
+- E12 (canal quantizado e ruidoso), com critérios commitados antes da execução (a4199e6). Resultado: o total de bits não governa a acurácia (B1 reprovado); a acurácia segue o número de medidas r, e a precisão satura em 1 a 2 bits (ruído) ou 2 a 4 bits (quantização). B3 e B4 aprovados.
 - Hipótese H14 (o ruído do minilote domina o erro de cada projeção) e experimento E13d para testá-la.
 - `docs/07-mapa-ensaio.md`, `scripts/verificar_ensaio.py` (15 de 15), `docs/08-leituras.md` (20 artigos lidos no texto completo).
 - Artigo em IEEEtran com a seção de resultados do E12.

@@ -1,6 +1,6 @@
 # E13: desenho fatorial para definir I
 
-> Linha de pesquisa: questão 3 do instituto (como definir I separando tarefa, arquitetura, inicialização e algoritmo); H11 e H12. Critérios registrados no git antes da execução (c383af8).
+> Linha de pesquisa: questão 3 do instituto (como definir I separando tarefa, arquitetura, inicialização e algoritmo); H11 e H12. Critérios registrados no git antes da execução (d033730).
 
 ## Pergunta
 

@@ -1,6 +1,6 @@
 # E16: lote acima de B_simple
 
-> Linha de pesquisa: questão 2 do instituto; fecha a H14b, que o E15 não alcançou. Critérios registrados no git antes da execução (b2dc840).
+> Linha de pesquisa: questão 2 do instituto; fecha a H14b, que o E15 não alcançou. Critérios registrados no git antes da execução (fe356c4).
 
 ## Pergunta
 

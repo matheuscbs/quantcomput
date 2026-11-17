@@ -1,6 +1,6 @@
 # E14: perturbação real, sem backpropagation
 
-> Linha de pesquisa: questão 1 do instituto (como as projeções foram calculadas e o que entra no custo). Critérios registrados no git antes da execução (88dca6c).
+> Linha de pesquisa: questão 1 do instituto (como as projeções foram calculadas e o que entra no custo). Critérios registrados no git antes da execução (a0217d6).
 
 ## Pergunta
 
@@ -74,4 +74,4 @@ make e14
 
 - Sementes: as do E11 (pesos `manual_seed(s)`, direções `Generator().manual_seed(1000 + s)`, lotes `default_rng(s)`), mais o conversor estocástico `Generator().manual_seed(2000 + s)`; s = 0, 1.
 - Ambiente: `poetry.lock` (torch 2.15.0, numpy 2.5.4), Python 3.12, CPU com 2 threads por processo; as duas sementes rodam em processos paralelos.
-- Nota de registro: os dois processos oficiais foram iniciados alguns segundos antes do commit 88dca6c, por um erro na cadeia de comandos. O script executado é idêntico ao commitado (`git diff` vazio), e nenhum resultado existia no momento do commit.
+- Nota de registro: os dois processos oficiais foram iniciados alguns segundos antes do commit a0217d6, por um erro na cadeia de comandos. O script executado é idêntico ao commitado (`git diff` vazio), e nenhum resultado existia no momento do commit.
