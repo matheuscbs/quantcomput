@@ -46,6 +46,10 @@ e16: | $(OUT)
 	for s in 0 1; do $(PY) $(EXP)/E16-lote-grande/lote_grande.py rodar dados/fashion $(OUT)/e16-s$$s.json $$s; done
 	$(PY) $(EXP)/E16-lote-grande/lote_grande.py analisar $(OUT)/e16.json $(EXP)/E15-ruido-do-minilote/resultados/ruido-do-minilote.json $(OUT)/e16-s0.json $(OUT)/e16-s1.json
 
+e17: | $(OUT)
+	for s in 0 1 2; do $(PY) $(EXP)/E17-cache-sinaptico/cache_sinaptico.py rodar dados/fashion $(OUT)/e17-s$$s.json $$s; done
+	$(PY) $(EXP)/E17-cache-sinaptico/cache_sinaptico.py analisar $(OUT)/e17.json $(OUT)/e17-s0.json $(OUT)/e17-s1.json $(OUT)/e17-s2.json
+
 verificar:
 	python3 scripts/verificar_ensaio.py
 
@@ -58,7 +62,3 @@ lint:
 
 limpar:
 	rm -rf $(OUT) artigo/*.aux artigo/*.log artigo/*.out
-
-e17: | $(OUT)
-	for s in 0 1 2; do $(PY) $(EXP)/E17-cache-sinaptico/cache_sinaptico.py rodar dados/fashion $(OUT)/e17-s$$s.json $$s; done
-	$(PY) $(EXP)/E17-cache-sinaptico/cache_sinaptico.py analisar $(OUT)/e17.json $(OUT)/e17-s0.json $(OUT)/e17-s1.json $(OUT)/e17-s2.json

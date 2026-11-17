@@ -24,7 +24,7 @@ flowchart TD
 | Conhecimento | `docs/` | a cada experimento ou decisão | quem pesquisa |
 | Publicação | `ensaio/`, `artigo/` | o ensaio fica congelado; o artigo evolui | avaliadores |
 
-`privado/` guarda o currículo e a correspondência. Está no `.gitignore` e não deve ser publicado.
+`privado/` guarda documentos pessoais. Está no `.gitignore` e nunca é publicado.
 
 ## Contrato de um experimento
 
@@ -73,7 +73,7 @@ Os scripts longos (E10, E11) regravam o JSON ao fim de cada bloco. Uma execuçã
 
 ## Como o E11 funciona por dentro
 
-O E11 é o experimento central. O diagrama mostra um passo de treino em cada modo.
+O E11 deu origem à linha atual, e os experimentos seguintes reaproveitam o mesmo canal de projeções. O diagrama mostra um passo de treino em cada modo.
 
 ```mermaid
 flowchart TD

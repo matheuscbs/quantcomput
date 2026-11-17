@@ -18,6 +18,21 @@ Os números abaixo saem dos JSONs em `experimentos/*/resultados/` e, nos experim
 | E10 | atenção esparsa | inconclusivo | ganho de contexto 0,042 < 0,05 nat |
 | E11 | limite de canal | evidência parcial | r = 8: 69,6% (N = 13 mil) e 74,2% (N = 118 mil) |
 | E12 | limite de canal | total de bits não governa (B1 reprovado) | ruído com 1 bit por medida: no máximo 1 ponto abaixo do float32 |
+| E13 | limite de canal | $I$ é da tarefa (H11 e H12 aprovadas) | tarefa: 88,5% da variação de $\log_2 I$ |
+| E14 | limite de canal | sem backprop, a leitura decide (P0 a P4 aprovados) | leitura absoluta: 16 bits; diferencial: 2 bits |
+| E15 | limite de canal | o minilote limita cada medida (H14 parcial, H10′ aprovada) | $R^2$ 0,89 com $b_{\text{ef}}$ contra 0,02 com bits nominais |
+| E16 | limite de canal | inconclusivo (R0 reprovado) | $\mathrm{SNR}_B$ de 4,31 e 8,59 no maior lote, abaixo de 10 |
+| E17 | custo de gravação | H17, H18 e H19 aprovadas | $\rho$ de 21 a 49 sem cache; $G(16)$ de 9,4 a 17,6 |
+
+## E13 a E17
+
+Cada um destes experimentos tem tabelas completas no próprio README. Aqui fica o número que decide e onde ele está.
+
+- **[E13](../experimentos/E13-fatorial-de-I/README.md), fatorial de $I$.** 72 execuções, nenhuma censurada. A tarefa explicou 88,5% da soma dos quadrados de $\log_2 I$ entre as 24 células. $I$ cresceu com o número de classes nas 8 combinações de arquitetura, inicialização e algoritmo.
+- **[E14](../experimentos/E14-perturbacao-real/README.md), perturbação real.** Com projeções medidas por diferença central da perda, sem backprop, a acurácia ficou a no máximo 0,13 ponto da projeção exata. Ler cada perda separadamente exigiu 16 bits; ler a diferença, 2.
+- **[E15](../experimentos/E15-ruido-do-minilote/README.md), ruído do minilote.** $\mathrm{SNR}_B$ por projeção entre 0,23 e 0,75. A informação efetiva por projeção explicou a acurácia com $R^2$ = 0,89, e os bits nominais do canal, com 0,02.
+- **[E16](../experimentos/E16-lote-grande/README.md), lote grande.** Com lotes de 8.192 e 32.768, o critério de regime ($\mathrm{SNR}_B \ge 10$) não foi atingido, porque $B_{\text{simple}}$ cresce quando a perda cai. Inconclusivo pelo registro.
+- **[E17](../experimentos/E17-cache-sinaptico/README.md), cache sináptico.** Sem cache, o treino projetado percorreu de 21 a 49 vezes o deslocamento que guardou; o backprop, cerca de 5. A previsão do passeio aleatório errou menos de 5% por célula. Um cache com limiar de 16 passos típicos reduziu a escrita de 9,4 a 17,6 vezes.
 
 ## E12: canal quantizado e ruidoso
 

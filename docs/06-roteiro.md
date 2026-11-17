@@ -2,7 +2,7 @@
 
 ## Próximos passos imediatos
 
-> **Estado em 2026-11-16 (v0.3.0).** E12 a E16 feitos. E13 = desenho fatorial (inclui o antigo E13a); E14 = perturbação real; E15 = antigo E13d; E16 = lote acima de $B_{\text{simple}}$. Vereditos em [hipóteses](hipoteses.md). Os próximos passos estão no fim deste documento.
+> **Estado em 2026-11-17 (v0.4.0).** E12 a E17 feitos; o E17 mediu o custo de gravar os pesos ([hipótese final](09-hipotese-final.md)). Antes, em v0.3.0: E12 a E16 feitos. E13 = desenho fatorial (inclui o antigo E13a); E14 = perturbação real; E15 = antigo E13d; E16 = lote acima de $B_{\text{simple}}$. Vereditos em [hipóteses](hipoteses.md). Os próximos passos estão no fim deste documento.
 
 ```mermaid
 flowchart LR

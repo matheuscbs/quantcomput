@@ -2,7 +2,7 @@
 
 Histórico de versões do conhecimento e do código. Convenção em [ARQUITETURA.md](ARQUITETURA.md#versionamento-do-conhecimento): maior quando a hipótese central muda; meio para experimento ou evidência nova; menor para correções sem efeito nos resultados.
 
-## [Não lançado]
+## [0.4.0] - 2026-11-17
 
 ### Adicionado
 
@@ -12,6 +12,13 @@ Histórico de versões do conhecimento e do código. Convenção em [ARQUITETURA
 - Artigo: seção de custo de gravação (formulação, método, resultado do E17, discussão e limites), tabela gerada a partir do JSON oficial e duas referências novas (Li e van Rossum, 2020; Girard, Jiang e van Rossum, 2023).
 - E17, análises posteriores ao resultado: eventos de escrita por peso e expoente do κ ótimo contra o preço de manutenção.
 - Roteiro renumerado: E18 consolidação por reforço, E19 bancada de energia; tarefas maiores, ruído de avaliação e limite inferior passam a E20, E21 e E22.
+
+### Mudado
+
+- README reescrito para a publicação: resultados de E11 a E17, estrutura comentada das pastas, guia de leitura e contrato de um experimento.
+- `docs/02-resultados.md` passa a resumir E13 a E17; `artigo/README.md` descreve o artigo atual e o gerador de tabelas.
+- Versão do `pyproject.toml` e do `CITATION.cff` alinhada com o CHANGELOG; referência a `docs/05-reprodutibilidade.md` corrigida.
+- Referências a ferramentas e caminhos da base de notas pessoal retiradas de `docs/04` e `docs/08`.
 
 ## [0.3.0] - 2026-11-16
 

@@ -80,7 +80,7 @@ Duas consequências testáveis:
 
 ## 8. Ruído do minilote (McCandlish et al., 2018; Smith et al., 2018)
 
-Leitura de 2026-11-16, no texto completo (notebook `17716a39`; nota no vault: *Ruído, Leitura e Energia no Treino Físico*).
+Leitura de 2026-11-16, no texto completo.
 
 **Mostram.** A escala de ruído do gradiente $B_{\text{simple}} = \mathrm{tr}(\Sigma)/|G|^2$ dá o erro relativo esperado de uma estimativa com lote B: $\mathbb{E}|G_{\text{est}} - G|^2/|G|^2 = B_{\text{simple}}/B$ (Eq. 2.10). $B_{\text{simple}}$ e $B_{\text{noise}}$ "typically differ only by a small constant multiplicative factor", o tamanho crítico de lote fica em $B_{\text{crit}} \approx B_{\text{noise}}$, e "the noise scale increases as the loss decreases". Smith et al. usam a escala de ruído $g \approx \epsilon N/B$ e mostram que aumentar o lote equivale a reduzir a taxa.
 

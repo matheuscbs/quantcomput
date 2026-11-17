@@ -1,13 +1,13 @@
 [project]
 name = "quantos-bits-custa-aprender"
-version = "0.2.0"
+version = "0.4.0"
 description = "Experimentos sobre o limite de informação do treino de hardware físico sem backpropagation."
 authors = [{ name = "Matheus Cardoso" }]
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12,<3.13"
 # Versões fixadas pelas que estavam no cache do uv em 2026-11-09, quando os experimentos rodaram.
-# Os experimentos usaram `uv run --no-project --with <pacote>` sem versão; ver docs/06-reprodutibilidade.md.
+# Os experimentos usaram `uv run --no-project --with <pacote>` sem versão; ver docs/05-reprodutibilidade.md.
 dependencies = [
     "numpy==2.5.4",
 ]

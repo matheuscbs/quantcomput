@@ -79,9 +79,9 @@ mindmap
 
 Baur e Strassen (1983); Abbas et al. (2023); Bowles, Wierichs e Park (2025); Jaques e Rattew (2023); Chia et al. (2020); Gabor (1946); An, Liu e Lin (2023). Lista completa com links em [`ensaio/ensaio-instituto-ramanujan.md`](../ensaio/ensaio-instituto-ramanujan.md#referências) e em [`artigo/referencias.bib`](../artigo/referencias.bib).
 
-## Pesquisa ampla no NotebookLM
+## Pesquisa ampla
 
-Além das referências acima, uma pesquisa profunda em quatro eixos (gradiente por perturbação, bits e precisão, informação da tarefa, treino físico) reuniu 187 fontes num notebook (`871b2ecd-1894-496c-aea8-b7d708d7573b`). O catálogo, com relatórios gerados, conceitos e a lista de fontes, está no vault Obsidian do autor, em `Pesquisas/04 - Engenharia e IA/Fronteiras Tecnológicas/Limites de Informação no Treino Físico/`. Os relatórios gerados se concentram em poucas fontes; só entram neste repositório as referências conferidas no original.
+Além das referências acima, uma pesquisa em quatro eixos (gradiente por perturbação, bits e precisão, informação da tarefa, treino físico) reuniu 187 fontes. O catálogo completo fica na base de notas pessoal do autor, fora deste repositório. Só entram aqui as referências conferidas no texto original.
 
 ## Lacunas a cobrir
 
