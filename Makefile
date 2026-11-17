@@ -5,7 +5,7 @@ PY = poetry run python
 EXP = experimentos
 OUT = saidas
 
-.PHONY: verificar instalar dados e01 e02 e03 e04 e05 e06 e07 e08 e09 e10 e11 e12 e13 e14 e15 e16 artigo lint limpar
+.PHONY: verificar instalar dados e01 e02 e03 e04 e05 e06 e07 e08 e09 e10 e11 e12 e13 e14 e15 e16 e17 artigo lint limpar
 
 instalar:
 	poetry install --all-extras
@@ -58,3 +58,7 @@ lint:
 
 limpar:
 	rm -rf $(OUT) artigo/*.aux artigo/*.log artigo/*.out
+
+e17: | $(OUT)
+	for s in 0 1 2; do $(PY) $(EXP)/E17-cache-sinaptico/cache_sinaptico.py rodar dados/fashion $(OUT)/e17-s$$s.json $$s; done
+	$(PY) $(EXP)/E17-cache-sinaptico/cache_sinaptico.py analisar $(OUT)/e17.json $(OUT)/e17-s0.json $(OUT)/e17-s1.json $(OUT)/e17-s2.json

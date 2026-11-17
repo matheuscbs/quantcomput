@@ -9,7 +9,7 @@ flowchart LR
     A["E11 e E12<br/>feitos"] --> C["E13 fatorial de I<br/>feito"]
     A --> D["E14 perturbação real<br/>feito"]
     A --> F["E15 e E16 ruído<br/>do minilote, feitos"]
-    C --> G["Próximos: E17 tarefas maiores,<br/>E18 ruído de avaliação,<br/>E19 limite inferior"]
+    C --> G["Próximos: E17 cache sináptico,<br/>E18 consolidação por reforço,<br/>E19 bancada de energia"]
     D --> G
     F --> G
     G --> E["Bancada analógica"]
@@ -65,9 +65,12 @@ Trocar a projeção exata por uma medida que hardware sem backpropagation conseg
 
 ## Próximos experimentos (depois da v0.3)
 
-- **E17, tarefas maiores.** Repetir o E13 com CIFAR-10 e CIFAR-100 (k até 100) e com redes convolucionais, para testar se $I$ continua dominado pela tarefa e medir o expoente em k sem misturar k com a identidade das classes (subconjuntos aleatórios de classes, várias amostras por k).
-- **E18, ruído de avaliação.** No E14, somar ruído à leitura de cada perda (térmico e de disparo) e deriva dos pesos, para ver se a vantagem da leitura diferencial se mantém e onde ela some.
-- **E19, mínimo sobre algoritmos e limite inferior.** Comparar protocolos (projeções aleatórias, direções do subespaço de topo estimado, SPSA) na mesma tarefa, e estimar um limite inferior de $I$ pelo argumento de Fano (Agarwal et al.).
+- **E17, cache sináptico (pré-registrado).** Mede quanto o treino por medidas ruidosas grava além do que guarda e se um cache transitório recupera a diferença. Hipótese em [09](09-hipotese-final.md).
+- **E18, consolidação por reforço.** Cache que só consolida o que se repete (marcação e captura sináptica).
+- **E19, bancada de energia.** Precisão de leitura, curva do conversor e escrita em memória não volátil medidas em joules.
+- **E20, tarefas maiores.** Repetir o E13 com CIFAR-10 e CIFAR-100 (k até 100) e com redes convolucionais, para testar se $I$ continua dominado pela tarefa e medir o expoente em k sem misturar k com a identidade das classes (subconjuntos aleatórios de classes, várias amostras por k).
+- **E21, ruído de avaliação.** No E14, somar ruído à leitura de cada perda (térmico e de disparo) e deriva dos pesos, para ver se a vantagem da leitura diferencial se mantém e onde ela some.
+- **E22, mínimo sobre algoritmos e limite inferior.** Comparar protocolos (projeções aleatórias, direções do subespaço de topo estimado, SPSA) na mesma tarefa, e estimar um limite inferior de $I$ pelo argumento de Fano (Agarwal et al.).
 - **H13 (modo adaptativo que acumula o subespaço de topo)** continua a testar.
 - **Regime em que o canal domina.** Não alcançável em Fashion-MNIST com lotes até 32.768 (E16). Exige tarefa com $B_{\text{simple}}$ menor ou estimativa do gradiente com menos ruído de amostragem.
 

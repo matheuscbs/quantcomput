@@ -21,6 +21,9 @@ Cada hipótese recebe um identificador permanente. O estado muda quando um exper
 | H10′ | A acurácia segue a informação efetiva por projeção, $\tfrac12\log_2(1+\mathrm{SNR}_{\text{ef}})$, com o ruído do minilote incluído | **aprovada no E15** | E15, E16 | $R^2$ = 0,89 nas 15 células do E15 (nominal: 0,02); 0,83 nas 23 células com o E16, em leitura exploratória |
 | H15 | Com medida por diferença central, sem backpropagation, a acurácia do canal ideal se mantém e não cai com N | **aprovada no E14** | E14 | P1 e P4 em 6 de 6 células; diferença máxima de 0,13 ponto |
 | H16 | Ler cada perda separadamente exige da ordem de 16 bits por leitura; ler a diferença exige 2 | **aprovada no E14** | E14 | P2 e P3 em 6 de 6 células; previsão $\log_2(4/(2\varepsilon\,\mathrm{med}\lvert p\rvert))$ de 14,8 a 16,5 bits |
+| H17 | Sem cache, o treino por medidas ruidosas grava muito mais do que guarda: $\rho = \sum\lvert\Delta w\rvert / \lVert w_T-w_0\rVert_1 \ge 10$, e pelo menos 3 vezes o do backprop | a testar | E17 | ver [docs/09](09-hipotese-final.md) |
+| H18 | $\rho$ é previsto pela SNR por coordenada, $q = (r/N)\,\mathrm{SNR}_{\text{ef}}/(1+\mathrm{SNR}_{\text{ef}})$, pela fórmula do passeio aleatório com deriva | a testar | E17 | conferida num modelo quadrático (erro de até cerca de 20%) |
+| H19 | Um cache transitório com consolidação por limiar (Li e van Rossum, 2020) recupera o desperdício: $G(16) \ge 5$ | a testar | E17 | o decaimento simples do transitório impediu o treino no modelo de brinquedo e ficou para o E18 |
 
 ## Ideias descartadas sem experimento
 
